@@ -16,8 +16,9 @@
 
 CREATE TABLE llx_distributionlist_distributionlist(
 	-- BEGIN MODULEBUILDER FIELDS
-	rowid integer AUTO_INCREMENT PRIMARY KEY NOT NULL, 
-	ref varchar(128) DEFAULT '(PROV)' NOT NULL, 
+	rowid integer AUTO_INCREMENT PRIMARY KEY NOT NULL,
+	ref varchar(128) DEFAULT '(PROV)' NOT NULL,
+    entity	integer  DEFAULT 1 NOT NULL, -- multi company id
 	label varchar(255), 
 	description text, 
 	note_public text, 
