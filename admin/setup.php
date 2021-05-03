@@ -254,10 +254,11 @@ if ($action == 'edit')
 
 $moduledir = 'distributionlist';
 $myTmpObjects = array();
-$myTmpObjects['MyObject']=array('includerefgeneration'=>0, 'includedocgeneration'=>0);
+$myTmpObjects['DistributionList']=array('includerefgeneration'=>1, 'includedocgeneration'=>0);
 
 
 foreach ($myTmpObjects as $myTmpObjectKey => $myTmpObjectArray) {
+
 	if ($myTmpObjectKey == 'MyObject') continue;
 	if ($myTmpObjectArray['includerefgeneration']) {
 		/*

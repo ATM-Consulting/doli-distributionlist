@@ -106,7 +106,7 @@ class DistributionList extends CommonObject
 		'fk_user_modif' => array('type'=>'integer:User:user/class/user.class.php', 'label'=>'UserModif', 'enabled'=>'1', 'position'=>511, 'notnull'=>-1, 'visible'=>-2,),
 		'import_key' => array('type'=>'varchar(14)', 'label'=>'ImportId', 'enabled'=>'1', 'position'=>1000, 'notnull'=>-1, 'visible'=>-2,),
 		'status' => array('type'=>'smallint', 'label'=>'Status', 'enabled'=>'1', 'position'=>1000, 'notnull'=>1, 'visible'=>5, 'index'=>1, 'arrayofkeyval'=>array('0'=>'Brouillon', '1'=>'Valid&eacute;', '9'=>'Annul&eacute;'),),
-		'date_cloture' => array('type'=>'datetime', 'label'=>'DateClosing', 'enabled'=>'1', 'position'=>50, 'notnull'=>0, 'visible'=>-2,),
+		'date_cloture' => array('type'=>'datetime', 'label'=>'DateClosing', 'enabled'=>'1', 'position'=>50, 'notnull'=>0, 'visible'=>1,),
 	);
 	public $rowid;
 	public $ref;

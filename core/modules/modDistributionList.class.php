@@ -243,17 +243,17 @@ class modDistributionList extends DolibarrModules
 		// Add here entries to declare new permissions
 		/* BEGIN MODULEBUILDER PERMISSIONS */
 		$this->rights[$r][0] = $this->numero + $r; // Permission id (must not be already used)
-		$this->rights[$r][1] = 'Read objects of DistributionList'; // Permission label
+		$this->rights[$r][1] = 'DistributionListPermRead'; // Permission label
 		$this->rights[$r][4] = 'distributionlist'; // In php code, permission will be checked by test if ($user->rights->distributionlist->level1->level2)
 		$this->rights[$r][5] = 'read'; // In php code, permission will be checked by test if ($user->rights->distributionlist->level1->level2)
 		$r++;
 		$this->rights[$r][0] = $this->numero + $r; // Permission id (must not be already used)
-		$this->rights[$r][1] = 'Create/Update objects of DistributionList'; // Permission label
+		$this->rights[$r][1] = 'DistributionListPermCreateUpdate'; // Permission label
 		$this->rights[$r][4] = 'distributionlist'; // In php code, permission will be checked by test if ($user->rights->distributionlist->level1->level2)
 		$this->rights[$r][5] = 'write'; // In php code, permission will be checked by test if ($user->rights->distributionlist->level1->level2)
 		$r++;
 		$this->rights[$r][0] = $this->numero + $r; // Permission id (must not be already used)
-		$this->rights[$r][1] = 'Delete objects of DistributionList'; // Permission label
+		$this->rights[$r][1] = 'DistributionListPermDelete'; // Permission label
 		$this->rights[$r][4] = 'distributionlist'; // In php code, permission will be checked by test if ($user->rights->distributionlist->level1->level2)
 		$this->rights[$r][5] = 'delete'; // In php code, permission will be checked by test if ($user->rights->distributionlist->level1->level2)
 		$r++;
@@ -329,7 +329,7 @@ class modDistributionList extends DolibarrModules
             'fk_menu'=>'fk_mainmenu=distributionlist',
             // This is a Left menu entry
             'type'=>'left',
-            'titre'=>'List DistributionList',
+            'titre'=>$langs->trans('ModuleDistributionListName'),
             'mainmenu'=>'distributionlist',
             'leftmenu'=>'distributionlist_distributionlist',
             'url'=>'/distributionlist/distributionlist_list.php',
@@ -344,26 +344,46 @@ class modDistributionList extends DolibarrModules
             // 0=Menu for internal users, 1=external users, 2=both
             'user'=>2,
         );
-        $this->menu[$r++]=array(
-            // '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
-            'fk_menu'=>'fk_mainmenu=distributionlist,fk_leftmenu=distributionlist_distributionlist',
-            // This is a Left menu entry
-            'type'=>'left',
-            'titre'=>'New DistributionList',
-            'mainmenu'=>'distributionlist',
-            'leftmenu'=>'distributionlist_distributionlist',
-            'url'=>'/distributionlist/distributionlist_card.php?action=create',
-            // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
-            'langs'=>'distributionlist@distributionlist',
-            'position'=>1100+$r,
-            // Define condition to show or hide menu entry. Use '$conf->distributionlist->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
-            'enabled'=>'$conf->distributionlist->enabled',
-            // Use 'perms'=>'$user->rights->distributionlist->level1->level2' if you want your menu with a permission rules
-            'perms'=>'1',
-            'target'=>'',
-            // 0=Menu for internal users, 1=external users, 2=both
-            'user'=>2
-        );
+		$this->menu[$r++]=array(
+			// '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
+			'fk_menu'=>'fk_mainmenu=distributionlist,fk_leftmenu=distributionlist_distributionlist',
+			// This is a Left menu entry
+			'type'=>'left',
+			'titre'=>$langs->trans('DistributionListNew'),
+			'mainmenu'=>'distributionlist',
+			'leftmenu'=>'distributionlist_distributioncreate',
+			'url'=>'/distributionlist/distributionlist_card.php?action=create',
+			// Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
+			'langs'=>'distributionlist@distributionlist',
+			'position'=>1100+$r,
+			// Define condition to show or hide menu entry. Use '$conf->distributionlist->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
+			'enabled'=>'$conf->distributionlist->enabled',
+			// Use 'perms'=>'$user->rights->distributionlist->level1->level2' if you want your menu with a permission rules
+			'perms'=>'1',
+			'target'=>'',
+			// 0=Menu for internal users, 1=external users, 2=both
+			'user'=>2
+		);
+		$this->menu[$r++]=array(
+			// '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
+			'fk_menu'=>'fk_mainmenu=distributionlist,fk_leftmenu=distributionlist_distributionlist',
+			// This is a Left menu entry
+			'type'=>'left',
+			'titre'=>$langs->trans('DistributionListList'),
+			'mainmenu'=>'distributionlist',
+			'leftmenu'=>'distributionlist_distributionlist',
+			'url'=>'/distributionlist/distributionlist_list.php',
+			// Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
+			'langs'=>'distributionlist@distributionlist',
+			'position'=>1100+$r,
+			// Define condition to show or hide menu entry. Use '$conf->distributionlist->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
+			'enabled'=>'$conf->distributionlist->enabled',
+			// Use 'perms'=>'$user->rights->distributionlist->level1->level2' if you want your menu with a permission rules
+			'perms'=>'1',
+			'target'=>'',
+			// 0=Menu for internal users, 1=external users, 2=both
+			'user'=>2
+		);
 
 		/* END MODULEBUILDER LEFTMENU DISTRIBUTIONLIST */
 

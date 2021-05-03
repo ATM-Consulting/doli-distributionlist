@@ -17,6 +17,10 @@
 # Générique
 #
 
+DistributionList=Liste de diffusion
+DistributionListNew=Nouvelle liste de diffusion
+DistributionListList=Voir toutes les listes de diffusion
+
 # Module label 'ModuleDistributionListName'
 ModuleDistributionListName = Listes de diffusion
 # Module description 'ModuleDistributionListDesc'
@@ -28,6 +32,13 @@ ModuleDistributionListDesc = Module de création de listes de diffusion pour app
 DistributionListSetup = Configuration du module DistributionList
 Settings = Réglages
 DistributionListSetupPage = Page de configuration du module DistributionList
+
+#
+# Permissions
+#
+DistributionListPermRead=Voir les listes de diffusion
+DistributionListPermCreateUpdate=Créer/modifier des listes de diffusion
+DistributionListPermDelete=Supprimer des listes de diffusion
 
 #
 # Page À propos
