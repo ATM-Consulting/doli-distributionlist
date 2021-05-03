@@ -336,7 +336,12 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	// Close confirmation
 	if ($action == 'close') {
 		// Create an array for form
-		$formquestion = array();
+		$formquestion = array(
+			// 'text' => $langs->trans("ConfirmClone"),
+			// array('type' => 'checkbox', 'name' => 'clone_content', 'label' => $langs->trans("CloneMainAttributes"), 'value' => 1),
+			// array('type' => 'checkbox', 'name' => 'update_prices', 'label' => $langs->trans("PuttingPricesUpToDate"), 'value' => 1),
+			array('type' => 'date', 'name' => 'date_cloture', 'label' => $langs->trans('DateClosing'), 'value'=>dol_now())
+		);
 		$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"].'?id='.$object->id, $langs->trans('ToClose'), $langs->trans('ConfirmCloseDistributionList', $object->ref), 'confirm_close', $formquestion, 'yes', 1);
 	}
 

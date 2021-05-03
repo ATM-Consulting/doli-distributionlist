@@ -642,6 +642,10 @@ class DistributionList extends CommonObject
 		 return -1;
 		 }*/
 
+		if(empty($this->date_cloture)) {
+			$this->date_cloture = GETPOST('date_clotureyear', 'int') . '-' . GETPOST('date_cloturemonth', 'int') . '-' . GETPOST('date_clotureday', 'int');
+		}
+		$this->update($user);
 		return $this->setStatusCommon($user, self::STATUS_CLOSED, $notrigger, 'DISTRIBUTIONLIST_CLOSE');
 	}
 
@@ -667,6 +671,8 @@ class DistributionList extends CommonObject
 		 return -1;
 		 }*/
 
+		$this->date_cloture = '';
+		$this->update($user);
 		return $this->setStatusCommon($user, self::STATUS_VALIDATED, $notrigger, 'DISTRIBUTIONLIST_REOPEN');
 	}
 
