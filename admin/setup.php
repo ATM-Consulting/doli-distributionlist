@@ -55,10 +55,10 @@ $backtopage = GETPOST('backtopage', 'alpha');
 
 $value = GETPOST('value', 'alpha');
 
-$arrayofparameters = array(
+/*$arrayofparameters = array(
 	'DISTRIBUTIONLIST_MYPARAM1'=>array('css'=>'minwidth200', 'enabled'=>1),
 	'DISTRIBUTIONLIST_MYPARAM2'=>array('css'=>'minwidth500', 'enabled'=>1)
-);
+);*/
 
 $error = 0;
 $setupnotempty = 0;
@@ -196,7 +196,7 @@ $head = distributionlistAdminPrepareHead();
 dol_fiche_head($head, 'settings', '', -1, "distributionlist@distributionlist");
 
 // Setup page goes here
-echo '<span class="opacitymedium">'.$langs->trans("DistributionListSetupPage").'</span><br><br>';
+echo '<span class="opacitymedium">'.$langs->trans("DistributionListSetupPage").'</span>';
 
 
 if ($action == 'edit')
@@ -245,10 +245,10 @@ if ($action == 'edit')
 		print '<a class="butAction" href="'.$_SERVER["PHP_SELF"].'?action=edit">'.$langs->trans("Modify").'</a>';
 		print '</div>';
 	}
-	else
+	/*else
 	{
 		print '<br>'.$langs->trans("NothingToSetup");
-	}
+	}*/
 }
 
 
@@ -516,9 +516,9 @@ foreach ($myTmpObjects as $myTmpObjectKey => $myTmpObjectArray) {
 	}
 }
 
-if (empty($setupnotempty)) {
+/*if (empty($setupnotempty)) {
 	print '<br>'.$langs->trans("NothingToSetup");
-}
+}*/
 
 // Page end
 dol_fiche_end();

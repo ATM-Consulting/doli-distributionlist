@@ -296,11 +296,54 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	{
 		$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"].'?id='.$object->id.'&lineid='.$lineid, $langs->trans('DeleteLine'), $langs->trans('ConfirmDeleteLine'), 'confirm_deleteline', '', 0, 1);
 	}
+	if ($action == 'modif') {
+		$text = $langs->trans('ConfirmUnvalidateDistributionList', $object->ref);
+		$formquestion = array();
+		$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"].'?id='.$object->id, $langs->trans('DistributionListUnvalidate', $object->ref), $text, 'confirm_setdraft', $formquestion, "yes", 1);
+	}
+	if ($action == 'validate') {
+		$error = 0;
+
+		// We verify whether the object is provisionally numbering
+		$ref = substr($object->ref, 1, 4);
+		if ($ref == 'PROV') {
+			$numref = $object->getNextNumRef($soc);
+			if (empty($numref)) {
+				$error++;
+				setEventMessages($object->error, $object->errors, 'errors');
+			}
+		} else {
+			$numref = $object->ref;
+		}
+
+		$text = $langs->trans('ConfirmValidateDistributionList', $numref);
+		if (!empty($conf->notification->enabled)) {
+			require_once DOL_DOCUMENT_ROOT.'/core/class/notify.class.php';
+			$notify = new Notify($db);
+			$text .= '<br>';
+			$text .= $notify->confirmMessage('DISTRIBUTIONLIST_VALIDATE', $object->socid, $object);
+		}
+
+		if (!$error)
+			$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"].'?id='.$object->id, $langs->trans('DistributionListValidate'), $text, 'confirm_validate', '', 0, 1);
+	}
 	// Clone confirmation
 	if ($action == 'clone') {
 		// Create an array for form
 		$formquestion = array();
 		$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"].'?id='.$object->id, $langs->trans('ToClone'), $langs->trans('ConfirmCloneAsk', $object->ref), 'confirm_clone', $formquestion, 'yes', 1);
+	}
+	// Close confirmation
+	if ($action == 'close') {
+		// Create an array for form
+		$formquestion = array();
+		$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"].'?id='.$object->id, $langs->trans('ToClose'), $langs->trans('ConfirmCloseDistributionList', $object->ref), 'confirm_close', $formquestion, 'yes', 1);
+	}
+
+	if ($action == 'reopen') {
+		// Create an array for form
+		$formquestion = array();
+		$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"].'?id='.$object->id, $langs->trans('ReOpen'), $langs->trans('ConfirmReopenDistributionList', $object->ref), 'confirm_reopen', '', 0, 1);
 	}
 
 	// Confirmation of action xxxx
@@ -474,7 +517,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 			{
 				if ($permissiontoadd)
 				{
-					print '<a class="butAction" href="'.$_SERVER['PHP_SELF'].'?id='.$object->id.'&action=confirm_setdraft&confirm=yes">'.$langs->trans("SetToDraft").'</a>';
+					print '<a class="butAction" href="'.$_SERVER['PHP_SELF'].'?id='.$object->id.'&action=modif">'.$langs->trans("SetToDraft").'</a>';
 				}
 			}
 
@@ -495,7 +538,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 				{
 					if (empty($object->table_element_line) || (is_array($object->lines) && count($object->lines) > 0))
 					{
-						print '<a class="butAction" href="'.$_SERVER['PHP_SELF'].'?id='.$object->id.'&action=confirm_validate&confirm=yes">'.$langs->trans("Validate").'</a>';
+						print '<a class="butAction" href="'.$_SERVER['PHP_SELF'].'?id='.$object->id.'&action=validate">'.$langs->trans("Validate").'</a>';
 					}
 					else
 					{
@@ -522,19 +565,19 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 				{
 					print '<a class="butAction" href="'.$_SERVER["PHP_SELF"].'?id='.$object->id.'&action=enable">'.$langs->trans("Enable").'</a>'."\n";
 				}
-			}
+			}*/
 			if ($permissiontoadd)
 			{
 				if ($object->status == $object::STATUS_VALIDATED)
 				{
-					print '<a class="butActionDelete" href="'.$_SERVER["PHP_SELF"].'?id='.$object->id.'&action=close">'.$langs->trans("Cancel").'</a>'."\n";
+					print '<a class="butActionDelete" href="'.$_SERVER["PHP_SELF"].'?id='.$object->id.'&action=close">'.$langs->trans("Close").'</a>'."\n";
 				}
-				else
+				elseif($object->status > 0)
 				{
-					print '<a class="butAction" href="'.$_SERVER["PHP_SELF"].'?id='.$object->id.'&action=reopen">'.$langs->trans("Re-Open").'</a>'."\n";
+					print '<a class="butAction" href="'.$_SERVER["PHP_SELF"].'?id='.$object->id.'&action=reopen">'.$langs->trans("ReOpen").'</a>'."\n";
 				}
 			}
-			*/
+
 
 			// Delete (need delete permission, or if draft, just need create/modify permission)
 			if ($permissiontodelete || ($object->status == $object::STATUS_DRAFT && $permissiontoadd))

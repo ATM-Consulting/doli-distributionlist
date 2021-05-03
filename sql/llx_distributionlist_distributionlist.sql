@@ -29,6 +29,6 @@ CREATE TABLE llx_distributionlist_distributionlist(
 	fk_user_modif integer, 
 	import_key varchar(14), 
 	status smallint NOT NULL, 
-	date_cloture datetime
+	date_cloture date
 	-- END MODULEBUILDER FIELDS
 ) ENGINE=innodb;

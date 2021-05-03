@@ -19,7 +19,13 @@
 
 DistributionList=Liste de diffusion
 DistributionListNew=Nouvelle liste de diffusion
-DistributionListList=Voir toutes les listes de diffusion
+DistributionListList=Voir toutes les listes
+ConfirmReopenDistributionList=Êtes-vous sûr de vouloir rouvrir cette liste de diffusion ?
+DistributionListValidate=Valider liste de diffusion
+ConfirmValidateDistributionList=Êtes-vous sûr de vouloir valider cette liste de diffusion sous la référence <STRONG>%s</STRONG> ?
+ConfirmCloseDistributionList=Êtes-vous sûr de vouloir clôturer cette liste de diffusion ?
+ConfirmUnvalidateDistributionList=Êtes-vous sûr de vouloir repasser la liste de diffusion <STRONG>%s</STRONG> au statut brouillon ?
+DistributionListUnvalidate=Repasser liste de diffusion au statut brouillon
 
 # Module label 'ModuleDistributionListName'
 ModuleDistributionListName = Listes de diffusion
@@ -29,9 +35,9 @@ ModuleDistributionListDesc = Module de création de listes de diffusion pour app
 #
 # Page d'administration
 #
-DistributionListSetup = Configuration du module DistributionList
+DistributionListSetup = Configuration du module listes de diffusion
 Settings = Réglages
-DistributionListSetupPage = Page de configuration du module DistributionList
+DistributionListSetupPage = Page de configuration du module listes de diffusion
 
 #
 # Permissions
