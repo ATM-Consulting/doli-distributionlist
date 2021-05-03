@@ -20,6 +20,7 @@
 DistributionList=Liste de diffusion
 DistributionListNew=Nouvelle liste de diffusion
 DistributionListList=Voir toutes les listes
+DistributionListAllList=Listes de diffusion
 ConfirmReopenDistributionList=Êtes-vous sûr de vouloir rouvrir cette liste de diffusion ?
 DistributionListValidate=Valider liste de diffusion
 ConfirmValidateDistributionList=Êtes-vous sûr de vouloir valider cette liste de diffusion sous la référence <STRONG>%s</STRONG> ?

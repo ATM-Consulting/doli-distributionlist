@@ -22,13 +22,16 @@ CREATE TABLE llx_distributionlist_distributionlist(
 	label varchar(255), 
 	description text, 
 	note_public text, 
-	note_private text, 
-	date_creation datetime NOT NULL, 
-	tms timestamp, 
+	note_private text,
+    date_creation datetime NOT NULL,
+    date_valid datetime,
+    tms timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 	fk_user_creat integer NOT NULL, 
-	fk_user_modif integer, 
+	fk_user_modif integer,
+    fk_user_cloture integer,
+    fk_user_valid integer,
 	import_key varchar(14), 
-	status smallint NOT NULL, 
+	status smallint NOT NULL,
 	date_cloture date
 	-- END MODULEBUILDER FIELDS
 ) ENGINE=innodb;

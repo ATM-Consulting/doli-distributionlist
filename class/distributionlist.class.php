@@ -103,9 +103,12 @@ class DistributionList extends CommonObject
 		'note_public' => array('type'=>'html', 'label'=>'NotePublic', 'enabled'=>'1', 'position'=>62, 'notnull'=>0, 'visible'=>0,),
 		'note_private' => array('type'=>'html', 'label'=>'NotePrivate', 'enabled'=>'1', 'position'=>63, 'notnull'=>0, 'visible'=>0,),
 		'date_creation' => array('type'=>'datetime', 'label'=>'DateCreation', 'enabled'=>'1', 'position'=>500, 'notnull'=>1, 'visible'=>-2,),
-		'tms' => array('type'=>'timestamp', 'label'=>'DateModification', 'enabled'=>'1', 'position'=>501, 'notnull'=>0, 'visible'=>-2,),
+		'date_valid' => array('type'=>'datetime', 'label'=>'DateCreation', 'enabled'=>'1', 'position'=>500, 'notnull'=>0, 'visible'=>-2,),
+		'tms' => array('type'=>'timestamp', 'label'=>'DateModification', 'enabled'=>'1', 'position'=>501, 'notnull'=>1, 'visible'=>-2,),
 		'fk_user_creat' => array('type'=>'integer:User:user/class/user.class.php', 'label'=>'UserAuthor', 'enabled'=>'1', 'position'=>510, 'notnull'=>1, 'visible'=>-2, 'foreignkey'=>'user.rowid',),
 		'fk_user_modif' => array('type'=>'integer:User:user/class/user.class.php', 'label'=>'UserModif', 'enabled'=>'1', 'position'=>511, 'notnull'=>-1, 'visible'=>-2,),
+		'fk_user_valid' => array('type'=>'integer:User:user/class/user.class.php', 'label'=>'UserValid', 'enabled'=>'1', 'position'=>511, 'notnull'=>-1, 'visible'=>-2,),
+		'fk_user_cloture' => array('type'=>'integer:User:user/class/user.class.php', 'label'=>'UserCloture', 'enabled'=>'1', 'position'=>511, 'notnull'=>-1, 'visible'=>-2,),
 		'import_key' => array('type'=>'varchar(14)', 'label'=>'ImportId', 'enabled'=>'1', 'position'=>1000, 'notnull'=>-1, 'visible'=>-2,),
 		'status' => array('type'=>'smallint', 'label'=>'Status', 'enabled'=>'1', 'position'=>1000, 'notnull'=>1, 'visible'=>5, 'index'=>1, 'arrayofkeyval'=>array('0'=>'Brouillon', '1'=>'Valid&eacute;', '9'=>'Closed'),),
 	);
@@ -215,6 +218,7 @@ class DistributionList extends CommonObject
 	 */
 	public function create(User $user, $notrigger = false)
 	{
+		if(empty($this->fk_user_creat)) $this->fk_user_creat = $user->id;
 		$this->status = (int)$this->status;
 		return $this->createCommon($user, $notrigger);
 	}
@@ -427,6 +431,7 @@ class DistributionList extends CommonObject
 	 */
 	public function update(User $user, $notrigger = false)
 	{
+		$this->tms = dol_now();
 		return $this->updateCommon($user, $notrigger);
 	}
 
@@ -513,7 +518,7 @@ class DistributionList extends CommonObject
 			$sql = "UPDATE ".MAIN_DB_PREFIX.$this->table_element;
 			$sql .= " SET ref = '".$this->db->escape($num)."',";
 			$sql .= " status = ".self::STATUS_VALIDATED;
-			if (!empty($this->fields['date_validation'])) $sql .= ", date_validation = '".$this->db->idate($now)."',";
+			if (!empty($this->fields['date_valid'])) $sql .= ", date_valid = '".$this->db->idate($now)."'";
 			if (!empty($this->fields['fk_user_valid'])) $sql .= ", fk_user_valid = ".$user->id;
 			$sql .= " WHERE rowid = ".$this->id;
 
@@ -617,6 +622,9 @@ class DistributionList extends CommonObject
 		 return -1;
 		 }*/
 
+		$this->date_valid = '';
+		$this->fk_user_valid = 0;
+		$this->update($user);
 		return $this->setStatusCommon($user, self::STATUS_DRAFT, $notrigger, 'DISTRIBUTIONLIST_UNVALIDATE');
 	}
 
@@ -645,6 +653,7 @@ class DistributionList extends CommonObject
 		if(empty($this->date_cloture)) {
 			$this->date_cloture = GETPOST('date_clotureyear', 'int') . '-' . GETPOST('date_cloturemonth', 'int') . '-' . GETPOST('date_clotureday', 'int');
 		}
+		if(empty($this->fk_user_cloture)) $this->fk_user_cloture = $user->id;
 		$this->update($user);
 		return $this->setStatusCommon($user, self::STATUS_CLOSED, $notrigger, 'DISTRIBUTIONLIST_CLOSE');
 	}
@@ -672,6 +681,7 @@ class DistributionList extends CommonObject
 		 }*/
 
 		$this->date_cloture = '';
+		$this->fk_user_cloture = 0;
 		$this->update($user);
 		return $this->setStatusCommon($user, self::STATUS_VALIDATED, $notrigger, 'DISTRIBUTIONLIST_REOPEN');
 	}
@@ -823,8 +833,8 @@ class DistributionList extends CommonObject
 	 */
 	public function info($id)
 	{
-		$sql = 'SELECT rowid, date_creation as datec, tms as datem,';
-		$sql .= ' fk_user_creat, fk_user_modif';
+		$sql = 'SELECT rowid, date_creation as datec, tms as datem, date_cloture, date_valid as datev,';
+		$sql .= ' fk_user_creat, fk_user_valid, fk_user_modif, fk_user_cloture';
 		$sql .= ' FROM '.MAIN_DB_PREFIX.$this->table_element.' as t';
 		$sql .= ' WHERE t.rowid = '.$id;
 		$result = $this->db->query($sql);
@@ -834,10 +844,10 @@ class DistributionList extends CommonObject
 			{
 				$obj = $this->db->fetch_object($result);
 				$this->id = $obj->rowid;
-				if ($obj->fk_user_author)
+				if ($obj->fk_user_creat)
 				{
 					$cuser = new User($this->db);
-					$cuser->fetch($obj->fk_user_author);
+					$cuser->fetch($obj->fk_user_creat);
 					$this->user_creation = $cuser;
 				}
 
@@ -846,6 +856,13 @@ class DistributionList extends CommonObject
 					$vuser = new User($this->db);
 					$vuser->fetch($obj->fk_user_valid);
 					$this->user_validation = $vuser;
+				}
+
+				if ($obj->fk_user_modif)
+				{
+					$muser = new User($this->db);
+					$muser->fetch($obj->fk_user_modif);
+					$this->user_modification = $muser;
 				}
 
 				if ($obj->fk_user_cloture)
@@ -858,6 +875,7 @@ class DistributionList extends CommonObject
 				$this->date_creation     = $this->db->jdate($obj->datec);
 				$this->date_modification = $this->db->jdate($obj->datem);
 				$this->date_validation   = $this->db->jdate($obj->datev);
+				$this->date_cloture   	 = $this->db->jdate($obj->date_cloture);
 			}
 
 			$this->db->free($result);

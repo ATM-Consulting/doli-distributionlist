@@ -216,7 +216,7 @@ $now = dol_now();
 
 //$help_url="EN:Module_DistributionList|FR:Module_DistributionList_FR|ES:Módulo_DistributionList";
 $help_url = '';
-$title = $langs->trans('ListOf', $langs->transnoentitiesnoconv("DistributionLists"));
+$title = $langs->trans('DistributionListAllList');
 
 
 // Build and execute select
