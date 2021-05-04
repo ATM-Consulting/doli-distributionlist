@@ -19,4 +19,28 @@ class ActionsDistributionlist {
 
 	}
 
+	function printFieldListWhere($parameters, &$object, &$action, $hookmanager) {
+
+		global $db;
+
+		dol_include_once('/distributionlist/class/distributionlistsocpeople.class.php');
+		$TContext = explode(':', $parameters['context']);
+		if(in_array('contactlist', $TContext)) {
+			$origin_page = GETPOST('origin_page');
+			if($origin_page === 'distributionlist_card') {
+				$o = new DistributionListSocpeople($db);
+
+				$TRes = $o->fetchAll('', '', 0, 0, array('customsql'=>' fk_distributionlist = '.GETPOST('id', 'int')));
+				if(!empty($TRes)) {
+					$TContacts = array();
+					foreach ($TRes as $obj) {
+						$TContacts[] = $obj->fk_socpeople;
+					}
+					$hookmanager->resPrint = ' AND p.rowid IN ('.implode(', ', $TContacts).')';
+				}
+			}
+		}
+
+	}
+
 }

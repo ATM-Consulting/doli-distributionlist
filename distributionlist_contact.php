@@ -113,7 +113,7 @@ llxHeader('', $langs->trans('DistributionList'), $help_url);
 	<script type="text/javascript" language="javascript">
 		$(document).ready(function() {
 			$.ajax({
-				url:"<?php print dol_buildpath('/contact/list.php', 2).'?origin_page=distributionlist_contact&'.http_build_query($_REQUEST); ?>"
+				url:"<?php print dol_buildpath('/contact/list.php', 2).'?origin_page=distributionlist_contact&id='.$id.'&'.http_build_query($_REQUEST); ?>"
 			}).done(function(data) {
 
 				// On remplace les liens de la pagination pour rester sur la liste de diffusion en cas de changement de page
