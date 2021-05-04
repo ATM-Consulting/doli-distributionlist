@@ -28,6 +28,7 @@ ConfirmCloseDistributionList=Êtes-vous sûr de vouloir clôturer cette liste de
 ConfirmUnvalidateDistributionList=Êtes-vous sûr de vouloir repasser la liste de diffusion <STRONG>%s</STRONG> au statut brouillon ?
 DistributionListUnvalidate=Repasser liste de diffusion au statut brouillon
 AddContactToDistributionList=Ajout de contacts à la liste
+DistributionListAddContacts=Ajouter les contacts sélectionnés à la liste de diffusion
 
 # Module label 'ModuleDistributionListName'
 ModuleDistributionListName = Listes de diffusion

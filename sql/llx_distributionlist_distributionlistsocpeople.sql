@@ -17,21 +17,10 @@
 CREATE TABLE llx_distributionlist_distributionlistsocpeople(
 	-- BEGIN MODULEBUILDER FIELDS
 	rowid integer AUTO_INCREMENT PRIMARY KEY NOT NULL, 
-	ref varchar(128) NOT NULL, 
-	label varchar(255), 
-	amount double DEFAULT NULL, 
-	qty real, 
-	fk_soc integer, 
-	fk_project integer, 
-	description text, 
-	note_public text, 
-	note_private text, 
+	fk_socpeople integer, 
+	fk_distributionlist integer, 
 	date_creation datetime NOT NULL, 
-	tms timestamp, 
 	fk_user_creat integer NOT NULL, 
-	fk_user_modif integer, 
-	import_key varchar(14), 
-	model_pdf varchar(255), 
-	status smallint NOT NULL
+	import_key varchar(14)
 	-- END MODULEBUILDER FIELDS
 ) ENGINE=innodb;

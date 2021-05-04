@@ -38,6 +38,7 @@ if (!$res && file_exists("../../../main.inc.php")) $res = @include "../../../mai
 if (!$res) die("Include of main fails");
 
 dol_include_once('/distributionlist/class/distributionlist.class.php');
+dol_include_once('/distributionlist/class/distributionlistsocpeople.class.php');
 dol_include_once('/distributionlist/lib/distributionlist_distributionlist.lib.php');
 require_once DOL_DOCUMENT_ROOT.'/core/class/html.form.class.php';
 
@@ -49,8 +50,10 @@ $langs->loadLangs(array("distributionlist@distributionlist", "companies"));
 $id = GETPOST('id', 'int');
 $ref        = GETPOST('ref', 'alpha');
 $action = GETPOST('action', 'alpha');
+$massaction = GETPOST('massaction', 'alpha');
 $cancel     = GETPOST('cancel', 'aZ09');
 $backtopage = GETPOST('backtopage', 'alpha');
+$contacts = GETPOST('toselect');
 
 // Initialize technical objects
 $object = new DistributionList($db);
@@ -80,7 +83,21 @@ $permissiontoadd = $user->rights->distributionlist->distributionlist->write; // 
 
 //include DOL_DOCUMENT_ROOT.'/core/actions_changeselectedfields.inc.php';
 
+// Si la liste est clôturée, on renvoie vers l'onlet fiche
 if($object->status > 1) header('Location: '.dol_buildpath('/distributionlist/distributionlist_card.php', 1).'?id='.$object->id);
+
+if($massaction === 'add_contacts') {
+
+	if(!empty($contacts)) {
+		foreach ($contacts as $id_contact) {
+			$o = new DistributionListSocpeople($db);
+			$o->fk_socpeople = $id_contact;
+			$o->fk_distributionlist = $id;
+			$o->create($user);
+		}
+	}
+
+}
 
 /*
  * View
@@ -96,7 +113,7 @@ llxHeader('', $langs->trans('DistributionList'), $help_url);
 	<script type="text/javascript" language="javascript">
 		$(document).ready(function() {
 			$.ajax({
-				url:"<?php print dol_buildpath('/contact/list.php', 2).'?'.http_build_query($_REQUEST); ?>"
+				url:"<?php print dol_buildpath('/contact/list.php', 2).'?origin_page=distributionlist_contact&'.http_build_query($_REQUEST); ?>"
 			}).done(function(data) {
 
 				// On remplace les liens de la pagination pour rester sur la liste de diffusion en cas de changement de page
@@ -122,6 +139,10 @@ llxHeader('', $langs->trans('DistributionList'), $help_url);
 
 				// On affiche la liste des contacts
 				$("#inclusion").append(contacts_list);
+
+				// Copie d'un bout de code dans /core/js/lib_foot.js.php car impossible de l'utiliser sinon
+				<?php include dol_buildpath('/distributionlist/js/distributionlist.js'); ?>
+
 			});
 		});
 	</script>
@@ -189,13 +210,10 @@ if ($id > 0 || !empty($ref))
 
 
 	$cssclass = "titlefield";
-	//include DOL_DOCUMENT_ROOT.'/core/tpl/notes.tpl.php';
 
-	print_barre_liste('', $page, $_SERVER["PHP_SELF"], $param, $sortfield, $sortorder, $massactionbutton, $num, $nbtotalofrecords, 'address', 0, $newcardbutton, '', $limit, 0, 0, 1);
-
-	print '<form name="add_contact" method="post" action="'.$_SERVER['PHP_SELF'].'?id='.$id.'">';
-	print '<div id="inclusion"></div>';
-	print '</form>';
+	//print '<form name="add_contact" method="post" action="'.$_SERVER['PHP_SELF'].'?id='.$id.'">';
+	print '<br /><div id="inclusion"></div>';
+	//print '</form>';
 
 	print '</div>';
 
