@@ -128,7 +128,7 @@ llxHeader('', $langs->trans('DistributionList'), $help_url);
 				});
 
 				// On remplace les liens de tri pour rester sur la liste de diffusion en cas de tri sur une colonne
-				contacts_list.find('table.liste a').each(function() {
+				contacts_list.find('table.liste tr.liste_titre a').each(function() {
 					$(this).attr('href', $(this).attr('href').replace("<?php print dol_buildpath('/contact/list.php', 1); ?>", "<?php print dol_buildpath('/distributionlist/distributionlist_contact.php', 1); ?>"));
 					$(this).attr('href', $(this).attr('href') + '&id=' + <?php print $id; ?>);
 				});
@@ -137,9 +137,6 @@ llxHeader('', $langs->trans('DistributionList'), $help_url);
 				var form = contacts_list.find('form[name="formfilter"]');
 				form.attr('action', contacts_list.find('form[name="formfilter"]').attr('action').replace("<?php print dol_buildpath('/contact/list.php', 1); ?>", "<?php print dol_buildpath('/distributionlist/distributionlist_contact.php', 1); ?>"));
 				form.attr('action', form.attr('action') + '?id=' + <?php print $id; ?>);
-
-				// On retire le lien de création de contact (à cet endroit on n'en veut pas)
-				form.find(form.find('a[href*="create"]')).parent('li').hide();
 
 				// On affiche la liste des contacts
 				$("#inclusion").append(contacts_list);

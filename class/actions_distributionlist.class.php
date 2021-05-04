@@ -2,6 +2,20 @@
 
 class ActionsDistributionlist {
 
+	function doActions($parameters, &$object, &$action, $hookmanager) {
+
+		global $user;
+
+		$TContext = explode(':', $parameters['context']);
+		if(in_array('contactlist', $TContext)) {
+			$origin_page = GETPOST('origin_page');
+			if($origin_page === 'distributionlist_contact' || $origin_page === 'distributionlist_card') {
+				// On retire la permission de créer dans ce contexte pour enlever le lien "Nouveau contact/adresse"
+				unset($user->rights->societe->contact->creer);
+			}
+		}
+	}
+
 	function addMoreMassActions($parameters, &$object, &$action, $hookmanager) {
 
 		global $langs;
@@ -46,7 +60,7 @@ class ActionsDistributionlist {
 						$TContacts[] = $obj->fk_socpeople;
 					}
 					$hookmanager->resPrint = ' AND p.rowid IN ('.implode(', ', $TContacts).')';
-				}
+				} else $hookmanager->resPrint = ' AND p.rowid = 0 ';
 			}
 		}
 

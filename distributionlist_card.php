@@ -61,6 +61,7 @@ require_once DOL_DOCUMENT_ROOT.'/core/class/html.formcompany.class.php';
 require_once DOL_DOCUMENT_ROOT.'/core/class/html.formfile.class.php';
 require_once DOL_DOCUMENT_ROOT.'/core/class/html.formprojet.class.php';
 dol_include_once('/distributionlist/class/distributionlist.class.php');
+dol_include_once('/distributionlist/class/distributionlistsocpeople.class.php');
 dol_include_once('/distributionlist/lib/distributionlist_distributionlist.lib.php');
 
 // Load translation files required by the page
@@ -75,7 +76,8 @@ $cancel     = GETPOST('cancel', 'aZ09');
 $contextpage = GETPOST('contextpage', 'aZ') ?GETPOST('contextpage', 'aZ') : 'distributionlistcard'; // To manage different context of search
 $backtopage = GETPOST('backtopage', 'alpha');
 $backtopageforcancel = GETPOST('backtopageforcancel', 'alpha');
-//$lineid   = GETPOST('lineid', 'int');
+$massaction = GETPOST('massaction', 'alpha');
+$contacts = GETPOST('toselect');
 
 // Initialize technical objects
 $object = new DistributionList($db);
@@ -172,7 +174,22 @@ if (empty($reshook))
 }
 
 
+if($massaction === 'delete_contacts') {
 
+	if(!empty($contacts)) {
+		foreach ($contacts as $id_contact) {
+			$o = new DistributionListSocpeople($db);
+			$TRes = $o->fetchAll('', '', 0, 0, array('customsql'=>' fk_socpeople = '.$id_contact.' AND fk_distributionlist = '.GETPOST('id', 'int')));
+
+			if(!empty($TRes)) {
+				foreach ($TRes as $obj) {
+					$obj->delete($user);
+				}
+			}
+		}
+	}
+
+}
 
 /*
  * View
@@ -188,6 +205,9 @@ $title = $langs->trans("DistributionList");
 $help_url = '';
 llxHeader('', $title, $help_url);
 
+$o = new DistributionListSocpeople($db);
+$TRes = $o->fetchAll('', '', 0, 0, array('customsql'=>' fk_distributionlist = '.GETPOST('id', 'int')));
+
 ?>
 
 	<script type="text/javascript" language="javascript">
@@ -199,23 +219,20 @@ llxHeader('', $title, $help_url);
 				// On remplace les liens de la pagination pour rester sur la liste de diffusion en cas de changement de page
 				var contacts_list = $(data).find('div.fiche');
 				contacts_list.find('table.table-fiche-title a').each(function() {
-					$(this).attr('href', $(this).attr('href').replace("<?php print dol_buildpath('/contact/list.php', 1); ?>", "<?php print dol_buildpath('/distributionlist/distributionlist_contact.php', 1); ?>"));
+					$(this).attr('href', $(this).attr('href').replace("<?php print dol_buildpath('/contact/list.php', 1); ?>", "<?php print dol_buildpath('/distributionlist/distributionlist_card.php', 1); ?>"));
 					$(this).attr('href', $(this).attr('href') + '&id=' + <?php print $id; ?>);
 				});
 
 				// On remplace les liens de tri pour rester sur la liste de diffusion en cas de tri sur une colonne
-				contacts_list.find('table.liste a').each(function() {
-					$(this).attr('href', $(this).attr('href').replace("<?php print dol_buildpath('/contact/list.php', 1); ?>", "<?php print dol_buildpath('/distributionlist/distributionlist_contact.php', 1); ?>"));
+				contacts_list.find('table.liste tr.liste_titre a').each(function() {
+					$(this).attr('href', $(this).attr('href').replace("<?php print dol_buildpath('/contact/list.php', 1); ?>", "<?php print dol_buildpath('/distributionlist/distributionlist_card.php', 1); ?>"));
 					$(this).attr('href', $(this).attr('href') + '&id=' + <?php print $id; ?>);
 				});
 
 				// Formulaire
 				var form = contacts_list.find('form[name="formfilter"]');
-				form.attr('action', contacts_list.find('form[name="formfilter"]').attr('action').replace("<?php print dol_buildpath('/contact/list.php', 1); ?>", "<?php print dol_buildpath('/distributionlist/distributionlist_contact.php', 1); ?>"));
+				form.attr('action', contacts_list.find('form[name="formfilter"]').attr('action').replace("<?php print dol_buildpath('/contact/list.php', 1); ?>", "<?php print dol_buildpath('/distributionlist/distributionlist_card.php', 1); ?>"));
 				form.attr('action', form.attr('action') + '?id=' + <?php print $id; ?>);
-
-				// On retire le lien de création de contact (à cet endroit on n'en veut pas)
-				form.find(form.find('a[href*="create"]')).parent('li').hide();
 
 				// On affiche la liste des contacts
 				$("#inclusion").append(contacts_list);
@@ -228,7 +245,6 @@ llxHeader('', $title, $help_url);
 	</script>
 
 <?php
-
 
 // Part to create
 if ($action == 'create')
@@ -631,7 +647,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 
 	print '<br /><span id="inclusion"></span>';
 
-	if ($action != 'presend')
+	/*if ($action != 'presend')
 	{
 		print '<div class="fichecenter"><div class="fichehalfleft">';
 		print '<a name="builddoc"></a>'; // ancre
@@ -668,7 +684,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		$somethingshown = $formactions->showactions($object, $object->element.'@distributionlist', (is_object($object->thirdparty) ? $object->thirdparty->id : 0), 1, '', $MAXEVENT, '', $morehtmlright);
 
 		print '</div></div></div>';
-	}
+	}*/
 
 	//Select mail models is same action as presend
 	if (GETPOST('modelselected')) $action = 'presend';
