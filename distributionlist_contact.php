@@ -78,15 +78,16 @@ $permissiontoadd = $user->rights->distributionlist->distributionlist->write; // 
  * Actions
  */
 
-include DOL_DOCUMENT_ROOT.'/core/actions_changeselectedfields.inc.php';
+//include DOL_DOCUMENT_ROOT.'/core/actions_changeselectedfields.inc.php';
+
+if($object->status > 1) header('Location: '.dol_buildpath('/distributionlist/distributionlist_card.php', 1).'?id='.$object->id);
 
 /*
  * View
  */
 
 $form = new Form($db);
-$massactionbutton = $form->selectMassAction('', $arrayofmassactions);
-//$help_url='EN:Customers_Orders|FR:Commandes_Clients|ES:Pedidos de clientes';
+
 $help_url = '';
 llxHeader('', $langs->trans('DistributionList'), $help_url);
 
