@@ -29,7 +29,9 @@ ConfirmUnvalidateDistributionList=Êtes-vous sûr de vouloir repasser la liste d
 DistributionListUnvalidate=Repasser liste de diffusion au statut brouillon
 AddContactToDistributionList=Ajout de contacts à la liste
 DistributionListAddContacts=Ajouter les contacts sélectionnés à la liste de diffusion
+DistributionListNbAddedContacts=%s nouveaux contacts ajoutés à la liste de diffusion
 DistributionListDeleteContacts=Supprimer les contacts sélectionnés de la liste de diffusion
+DistributionListNbDeletedContacts=%s contacts supprimés de la liste de diffusion
 
 # Module label 'ModuleDistributionListName'
 ModuleDistributionListName = Listes de diffusion

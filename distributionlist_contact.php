@@ -89,6 +89,7 @@ if($object->status > 1) header('Location: '.dol_buildpath('/distributionlist/dis
 if($massaction === 'add_contacts') {
 
 	if(!empty($contacts)) {
+		$nb_add = 0;
 		foreach ($contacts as $id_contact) {
 			$o = new DistributionListSocpeople($db);
 			$TRes = $o->fetchAll('', '', 0, 0, array('customsql'=>' fk_socpeople = '.$id_contact.' AND fk_distributionlist = '.GETPOST('id', 'int')));
@@ -96,9 +97,10 @@ if($massaction === 'add_contacts') {
 			if(empty($TRes)) { // N'existe pas déjà dans la liste
 				$o->fk_socpeople = $id_contact;
 				$o->fk_distributionlist = $id;
-				$o->create($user);
+				if($o->create($user) > 0) $nb_add++;
 			}
 		}
+		if(!empty($nb_add)) setEventMessage($langs->trans('DistributionListNbAddedContacts', $nb_add));
 	}
 
 }

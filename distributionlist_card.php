@@ -177,16 +177,18 @@ if (empty($reshook))
 if($massaction === 'delete_contacts') {
 
 	if(!empty($contacts)) {
+		$nb_del = 0;
 		foreach ($contacts as $id_contact) {
 			$o = new DistributionListSocpeople($db);
 			$TRes = $o->fetchAll('', '', 0, 0, array('customsql'=>' fk_socpeople = '.$id_contact.' AND fk_distributionlist = '.GETPOST('id', 'int')));
 
 			if(!empty($TRes)) {
 				foreach ($TRes as $obj) {
-					$obj->delete($user);
+					if($obj->delete($user) > 0) $nb_del++;
 				}
 			}
 		}
+		if(!empty($nb_del)) setEventMessage($langs->trans('DistributionListNbDeletedContacts', $nb_del));
 	}
 
 }
