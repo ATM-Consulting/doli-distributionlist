@@ -10,10 +10,19 @@ class ActionsDistributionlist {
 
 			$origin_page = GETPOST('origin_page');
 			if($origin_page === 'distributionlist_contact') {
+
 				$label = $langs->trans('DistributionListAddContacts');
 				$hookmanager->resPrint = '<option value="0">-- '.$langs->trans("SelectAction").' --</option>';
 				$hookmanager->resPrint.= '<option value="add_contacts" data-html="'.dol_escape_htmltag($label).'">'.$label.'</option>';
+
+			} elseif($origin_page === 'distributionlist_card') {
+
+				$label = $langs->trans('DistributionListDeleteContacts');
+				$hookmanager->resPrint = '<option value="0">-- '.$langs->trans("SelectAction").' --</option>';
+				$hookmanager->resPrint.= '<option value="delete_contacts" data-html="'.dol_escape_htmltag($label).'">'.$label.'</option>';
+
 			}
+
 			return 1;
 		}
 

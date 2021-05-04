@@ -91,9 +91,13 @@ if($massaction === 'add_contacts') {
 	if(!empty($contacts)) {
 		foreach ($contacts as $id_contact) {
 			$o = new DistributionListSocpeople($db);
-			$o->fk_socpeople = $id_contact;
-			$o->fk_distributionlist = $id;
-			$o->create($user);
+			$TRes = $o->fetchAll('', '', 0, 0, array('customsql'=>' fk_socpeople = '.$id_contact.' AND fk_distributionlist = '.GETPOST('id', 'int')));
+
+			if(empty($TRes)) { // N'existe pas déjà dans la liste
+				$o->fk_socpeople = $id_contact;
+				$o->fk_distributionlist = $id;
+				$o->create($user);
+			}
 		}
 	}
 
