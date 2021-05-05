@@ -43,7 +43,6 @@ dol_include_once('/distributionlist/class/distributionlistsocpeoplefilter.class.
 dol_include_once('/distributionlist/lib/distributionlist_distributionlist.lib.php');
 require_once DOL_DOCUMENT_ROOT.'/core/class/html.form.class.php';
 
-
 // Load translation files required by the page
 $langs->loadLangs(array("distributionlist@distributionlist", "companies", "mails"));
 
@@ -113,6 +112,8 @@ if($action === 'add_filter') {
 	$filter->fk_distributionlist = $id;
 	$filter->label = $label;
 	$filter->create($user);
+	// Pour éviter de réenregistrer le filtre en cas de réactualisation de la page
+	header('Location: '.$_SERVER['PHP_SELF'].'?id='.$id.'&action=set_filter&filter='.$filter->id);
 
 } elseif($action === 'set_filter') {
 	$f = new DistributionListSocpeopleFilter($db);
@@ -160,18 +161,18 @@ llxHeader('', $langs->trans('DistributionList'), $help_url);
 				var form_contacts = $(data).find('div.fiche form[name="formfilter"]');
 				form_contacts.find('table.table-fiche-title a').each(function() {
 					$(this).attr('href', $(this).attr('href').replace("<?php print dol_buildpath('/contact/list.php', 1); ?>", "<?php print dol_buildpath('/distributionlist/distributionlist_contact.php', 1); ?>"));
-					$(this).attr('href', $(this).attr('href') + '&id=' + <?php print $id; ?>);
+					$(this).attr('href', $(this).attr('href') + '&id=' + <?php print $id; ?> + '&filter=' + <?php if(!empty($filter_id)) print $filter_id; else print 0; ?>);
 				});
 
 				// On remplace les liens de tri pour rester sur la liste de diffusion en cas de tri sur une colonne
 				form_contacts.find('table.liste tr.liste_titre a').each(function() {
 					$(this).attr('href', $(this).attr('href').replace("<?php print dol_buildpath('/contact/list.php', 1); ?>", "<?php print dol_buildpath('/distributionlist/distributionlist_contact.php', 1); ?>"));
-					$(this).attr('href', $(this).attr('href') + '&id=' + <?php print $id; ?>);
+					$(this).attr('href', $(this).attr('href') + '&id=' + <?php print $id; ?> + '&filter=' + <?php if(!empty($filter_id)) print $filter_id; else print 0; ?>);
 				});
 
 				// Formulaire
 				form_contacts.attr('action', form_contacts.attr('action').replace("<?php print dol_buildpath('/contact/list.php', 1); ?>", "<?php print dol_buildpath('/distributionlist/distributionlist_contact.php', 1); ?>"));
-				form_contacts.attr('action', form_contacts.attr('action') + '?id=' + <?php print $id; ?>);
+				form_contacts.attr('action', form_contacts.attr('action') + '?id=' + <?php print $id; ?> + '&filter=' + <?php if(!empty($filter_id)) print $filter_id; else print 0; ?>);
 
 				// On affiche la liste des contacts
 				$("#inclusion").append(form_contacts);
@@ -257,13 +258,19 @@ if ($id > 0 || !empty($ref)) {
 
 		$TFilterDisplay=array();
 		foreach ($TFilters as $obj) $TFilterDisplay[$obj->id] = $obj->label;
-		print Form::selectarray('filter', $TFilterDisplay);
+		print Form::selectarray('filter', $TFilterDisplay, $filter_id, 1);
 		print '&emsp;<input class="butAction" type="SUBMIT" value="'.$langs->trans('AdvTgtLoadFilter').'"/>';
 
 
 	}
 
-	if (GETPOST('button_search_x', 'alpha') || GETPOST('button_search.x', 'alpha') || GETPOST('button_search', 'alpha') && $action !== 'set_filter')	{ // All tests are required to be compatible with all browsers
+	// Le preg_grep('/^search_/', array_keys($_REQUEST)) set à vérifier si le formulaire de recherche a été soumis
+	// Si j'utilise un !empty(GETPOST('button_search') c'est pas bon car l'input n'est pas transmis en cas d'appui sur la touche "Entrée"
+	if (count(preg_grep('/^search_/', array_keys($_REQUEST))) > 0
+		&& empty(GETPOST('button_removefilter', 'alpha'))
+		&& empty(GETPOST('button_removefilter.x', 'alpha'))
+		&& empty(GETPOST('button_removefilter_x', 'alpha'))
+		&& $action !== 'set_filter')	{ // All tests are required to be compatible with all browsers
 
 		print '<a class="butAction" href="'.$_SERVER['PHP_SELF'].'?action=add_filter&'.$TParamURL_HTTP_build_query.'">'.$langs->trans('AdvTgtSaveFilter').'</a>';
 

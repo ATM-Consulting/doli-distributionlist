@@ -242,8 +242,14 @@ unset($TParamURL['toselect']);
 				form_contacts.attr('action', form_contacts.attr('action').replace("<?php print dol_buildpath('/contact/list.php', 1); ?>", "<?php print dol_buildpath('/distributionlist/distributionlist_card.php', 1); ?>"));
 				form_contacts.attr('action', form_contacts.attr('action') + '?id=' + <?php print $id; ?>);
 
+				// Suppression des cases à cocher pour ne plus pouvoir toucher aux contacts présents dans la liste de diffusion si cette dernière est clôturée
+				<?php if($object->status > 1) { ?>
+					form_contacts.find('input[name*="toselect"], input[name*="checkallactions"]').hide();
+				<?php } ?>
+
 				// On affiche la liste des contacts
 				$("#inclusion").append(form_contacts);
+
 
 				// Copie d'un bout de code dans /core/js/lib_foot.js.php car impossible de l'utiliser sinon
 				<?php include dol_buildpath('/distributionlist/js/distributionlist.js'); ?>
