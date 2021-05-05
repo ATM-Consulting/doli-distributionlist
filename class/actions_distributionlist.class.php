@@ -27,13 +27,13 @@ class ActionsDistributionlist {
 
 				$label = $langs->trans('DistributionListAddContacts');
 				$hookmanager->resPrint = '<option value="0">-- '.$langs->trans("SelectAction").' --</option>';
-				$hookmanager->resPrint.= '<option value="add_contacts" data-html="'.dol_escape_htmltag($label).'">'.$label.'</option>';
+				$hookmanager->resPrint.= '<option value="distributionlist_add_contacts" data-html="'.dol_escape_htmltag($label).'">'.$label.'</option>';
 
 			} elseif($origin_page === 'distributionlist_card') {
 
 				$label = $langs->trans('DistributionListDeleteContacts');
 				$hookmanager->resPrint = '<option value="0">-- '.$langs->trans("SelectAction").' --</option>';
-				$hookmanager->resPrint.= '<option value="delete_contacts" data-html="'.dol_escape_htmltag($label).'">'.$label.'</option>';
+				$hookmanager->resPrint.= '<option value="distributionlist_delete_contacts" data-html="'.dol_escape_htmltag($label).'">'.$label.'</option>';
 
 			}
 

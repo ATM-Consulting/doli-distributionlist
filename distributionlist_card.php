@@ -174,7 +174,7 @@ if (empty($reshook))
 }
 
 
-if($massaction === 'delete_contacts') {
+if($massaction === 'distributionlist_delete_contacts') {
 
 	if(!empty($contacts)) {
 		$nb_del = 0;
@@ -210,34 +210,37 @@ llxHeader('', $title, $help_url);
 $o = new DistributionListSocpeople($db);
 $TRes = $o->fetchAll('', '', 0, 0, array('customsql'=>' fk_distributionlist = '.GETPOST('id', 'int')));
 
+// Suppression de la liste des contacts sélectionnés si existante pour ne pas remplir inutilement l'url lors de l'appel àa la liste standard des contacts (sinon bug)
+$TParamURL = $_REQUEST;
+unset($TParamURL['toselect']);
+
 ?>
 
 	<script type="text/javascript" language="javascript">
 		$(document).ready(function() {
 			$.ajax({
-				url:"<?php print dol_buildpath('/contact/list.php', 2).'?origin_page=distributionlist_card&'.http_build_query($_REQUEST); ?>"
+				url:"<?php print dol_buildpath('/contact/list.php', 2).'?origin_page=distributionlist_card&'.http_build_query($TParamURL); ?>"
 			}).done(function(data) {
 
 				// On remplace les liens de la pagination pour rester sur la liste de diffusion en cas de changement de page
-				var contacts_list = $(data).find('div.fiche');
-				contacts_list.find('table.table-fiche-title a').each(function() {
+				var form_contacts = $(data).find('div.fiche form[name="formfilter"]');
+				form_contacts.find('table.table-fiche-title a').each(function() {
 					$(this).attr('href', $(this).attr('href').replace("<?php print dol_buildpath('/contact/list.php', 1); ?>", "<?php print dol_buildpath('/distributionlist/distributionlist_card.php', 1); ?>"));
 					$(this).attr('href', $(this).attr('href') + '&id=' + <?php print $id; ?>);
 				});
 
 				// On remplace les liens de tri pour rester sur la liste de diffusion en cas de tri sur une colonne
-				contacts_list.find('table.liste tr.liste_titre a').each(function() {
+				form_contacts.find('table.liste tr.liste_titre a').each(function() {
 					$(this).attr('href', $(this).attr('href').replace("<?php print dol_buildpath('/contact/list.php', 1); ?>", "<?php print dol_buildpath('/distributionlist/distributionlist_card.php', 1); ?>"));
 					$(this).attr('href', $(this).attr('href') + '&id=' + <?php print $id; ?>);
 				});
 
 				// Formulaire
-				var form = contacts_list.find('form[name="formfilter"]');
-				form.attr('action', contacts_list.find('form[name="formfilter"]').attr('action').replace("<?php print dol_buildpath('/contact/list.php', 1); ?>", "<?php print dol_buildpath('/distributionlist/distributionlist_card.php', 1); ?>"));
-				form.attr('action', form.attr('action') + '?id=' + <?php print $id; ?>);
+				form_contacts.attr('action', form_contacts.attr('action').replace("<?php print dol_buildpath('/contact/list.php', 1); ?>", "<?php print dol_buildpath('/distributionlist/distributionlist_card.php', 1); ?>"));
+				form_contacts.attr('action', form_contacts.attr('action') + '?id=' + <?php print $id; ?>);
 
 				// On affiche la liste des contacts
-				$("#inclusion").append(contacts_list);
+				$("#inclusion").append(form_contacts);
 
 				// Copie d'un bout de code dans /core/js/lib_foot.js.php car impossible de l'utiliser sinon
 				<?php include dol_buildpath('/distributionlist/js/distributionlist.js'); ?>
@@ -334,11 +337,6 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	if ($action == 'delete')
 	{
 		$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"].'?id='.$object->id, $langs->trans('DeleteDistributionList'), $langs->trans('ConfirmDeleteObject'), 'confirm_delete', '', 0, 1);
-	}
-	// Confirmation to delete line
-	if ($action == 'deleteline')
-	{
-		$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"].'?id='.$object->id.'&lineid='.$lineid, $langs->trans('DeleteLine'), $langs->trans('ConfirmDeleteLine'), 'confirm_deleteline', '', 0, 1);
 	}
 	if ($action == 'modif') {
 		$text = $langs->trans('ConfirmUnvalidateDistributionList', $object->ref);
