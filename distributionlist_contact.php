@@ -39,21 +39,25 @@ if (!$res) die("Include of main fails");
 
 dol_include_once('/distributionlist/class/distributionlist.class.php');
 dol_include_once('/distributionlist/class/distributionlistsocpeople.class.php');
+dol_include_once('/distributionlist/class/distributionlistsocpeoplefilter.class.php');
 dol_include_once('/distributionlist/lib/distributionlist_distributionlist.lib.php');
 require_once DOL_DOCUMENT_ROOT.'/core/class/html.form.class.php';
 
 
 // Load translation files required by the page
-$langs->loadLangs(array("distributionlist@distributionlist", "companies"));
+$langs->loadLangs(array("distributionlist@distributionlist", "companies", "mails"));
 
 // Get parameters
 $id = GETPOST('id', 'int');
+$filter_id = GETPOST('filter', 'int');
 $ref        = GETPOST('ref', 'alpha');
 $action = GETPOST('action', 'alpha');
 $massaction = GETPOST('massaction', 'alpha');
 $cancel     = GETPOST('cancel', 'aZ09');
 $backtopage = GETPOST('backtopage', 'alpha');
+$label = GETPOST('label', 'alpha');
 $contacts = GETPOST('toselect');
+$confirm = GETPOST('confirm', 'alpha');
 
 // Initialize technical objects
 $object = new DistributionList($db);
@@ -75,7 +79,7 @@ if ($id > 0 || !empty($ref)) $upload_dir = $conf->distributionlist->multidir_out
 $permissionnote = $user->rights->distributionlist->distributionlist->write; // Used by the include of actions_setnotes.inc.php
 $permissiontoadd = $user->rights->distributionlist->distributionlist->write; // Used by the include of actions_addupdatedelete.inc.php
 
-
+$form = new Form($db);
 
 /*
  * Actions
@@ -83,17 +87,37 @@ $permissiontoadd = $user->rights->distributionlist->distributionlist->write; // 
 
 //include DOL_DOCUMENT_ROOT.'/core/actions_changeselectedfields.inc.php';
 
+// Si la liste est clôturée, on renvoie vers l'onlet fiche
+if($object->status > 1) header('Location: '.dol_buildpath('/distributionlist/distributionlist_card.php', 1).'?id='.$object->id);
+
 // Suppression de la liste des contacts sélectionnés si existante pour ne pas remplir inutilement l'url lors de l'appel àa la liste standard des contacts (sinon bug)
 $TParamURL = $_REQUEST;
 unset($TParamURL['toselect']);
 $TParamURL_HTTP_build_query = http_build_query($TParamURL);
 
-// Si la liste est clôturée, on renvoie vers l'onlet fiche
-if($object->status > 1) header('Location: '.dol_buildpath('/distributionlist/distributionlist_card.php', 1).'?id='.$object->id);
+if($action === 'add_filter') {
 
-// Enregistrement du filtre
-if (GETPOST('button_search_x', 'alpha') || GETPOST('button_search.x', 'alpha') || GETPOST('button_search', 'alpha')) {    // All tests are required to be compatible with all browsers
+	// Create an array for form
+	$formquestion = array(
+		// 'text' => $langs->trans("ConfirmClone"),
+		// array('type' => 'checkbox', 'name' => 'clone_content', 'label' => $langs->trans("CloneMainAttributes"), 'value' => 1),
+		// array('type' => 'checkbox', 'name' => 'update_prices', 'label' => $langs->trans("PuttingPricesUpToDate"), 'value' => 1),
+		array('type' => 'text', 'name' => 'label', 'label' => $langs->trans('AdvTgtOrCreateNewFilter'), 'value'=>$langs->trans('Filter').'&nbsp;'.date('d/m/Y H:i:s'))
+	);
+	$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"].'?id='.$object->id.'&'.$TParamURL_HTTP_build_query, $langs->trans('AdvTgtCreateFilter'), '', 'confirm_add_filter', $formquestion, 'yes', 1);
 
+} elseif ($action === 'confirm_add_filter' && $confirm === 'yes') {
+
+	$filter = new DistributionListSocpeopleFilter($db);
+	$filter->url_params = $TParamURL_HTTP_build_query;
+	$filter->fk_distributionlist = $id;
+	$filter->label = $label;
+	$filter->create($user);
+
+} elseif($action === 'set_filter') {
+	$f = new DistributionListSocpeopleFilter($db);
+	$f->fetch($filter_id);
+	$TParamURL_HTTP_build_query = $f->url_params;
 }
 
 // Ajout des contacts à la liste de diffusion
@@ -119,8 +143,6 @@ if($massaction === 'distributionlist_add_contacts') {
 /*
  * View
  */
-
-$form = new Form($db);
 
 $help_url = '';
 
@@ -163,8 +185,11 @@ llxHeader('', $langs->trans('DistributionList'), $help_url);
 
 <?php
 
-if ($id > 0 || !empty($ref))
-{
+if ($id > 0 || !empty($ref)) {
+
+	// Print form confirm
+	print $formconfirm;
+
 	$object->fetch_thirdparty();
 
 	$head = distributionlistPrepareHead($object);
@@ -173,7 +198,7 @@ if ($id > 0 || !empty($ref))
 
 	// Object card
 	// ------------------------------------------------------------
-	$linkback = '<a href="'.dol_buildpath('/distributionlist/distributionlist_list.php', 1).'?restore_lastsearch_values=1'.(!empty($socid) ? '&socid='.$socid : '').'">'.$langs->trans("BackToList").'</a>';
+	$linkback = '<a href="' . dol_buildpath('/distributionlist/distributionlist_list.php', 1) . '?restore_lastsearch_values=1' . (!empty($socid) ? '&socid=' . $socid : '') . '">' . $langs->trans("BackToList") . '</a>';
 
 	$morehtmlref = '<div class="refidno">';
 	/*
@@ -213,20 +238,44 @@ if ($id > 0 || !empty($ref))
 	 }
 	 }
 	 }*/
-	 $morehtmlref .= '</div>';
+	$morehtmlref .= '</div>';
 
 
 	dol_banner_tab($object, 'ref', $linkback, 1, 'ref', 'ref', $morehtmlref);
 
 
 	print '<div class="fichecenter">';
-	print '<div class="underbanner clearboth"></div>';
+	print '<div class="underbanner clearboth"></div><br />';
 
+	$filter = new DistributionListSocpeopleFilter($db);
+	$TFilters = $filter->fetchAll('', '', 0, 0, array('customsql'=> ' fk_distributionlist = '.$id), $filtermode = 'AND');
+
+	print '<div class="tabsAction">';
+	print '<form name="set_filter" method="POST" action="'.$_SERVER['PHP_SELF'].'?action=set_filter&id='.$id.'">';
+
+	if(!empty($TFilters)) {
+
+		$TFilterDisplay=array();
+		foreach ($TFilters as $obj) $TFilterDisplay[$obj->id] = $obj->label;
+		print Form::selectarray('filter', $TFilterDisplay);
+		print '&emsp;<input class="butAction" type="SUBMIT" value="'.$langs->trans('AdvTgtLoadFilter').'"/>';
+
+
+	}
+
+	if (GETPOST('button_search_x', 'alpha') || GETPOST('button_search.x', 'alpha') || GETPOST('button_search', 'alpha') && $action !== 'set_filter')	{ // All tests are required to be compatible with all browsers
+
+		print '<a class="butAction" href="'.$_SERVER['PHP_SELF'].'?action=add_filter&'.$TParamURL_HTTP_build_query.'">'.$langs->trans('AdvTgtSaveFilter').'</a>';
+
+	}
+
+	print '</form>';
+	print '</div>';
 
 	$cssclass = "titlefield";
 
 	//print '<form name="add_contact" method="post" action="'.$_SERVER['PHP_SELF'].'?id='.$id.'">';
-	print '<br /><div id="inclusion"></div>';
+	print '<div id="inclusion"></div>';
 	//print '</form>';
 
 	print '</div>';
