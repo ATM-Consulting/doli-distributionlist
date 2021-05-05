@@ -83,9 +83,20 @@ $permissiontoadd = $user->rights->distributionlist->distributionlist->write; // 
 
 //include DOL_DOCUMENT_ROOT.'/core/actions_changeselectedfields.inc.php';
 
+// Suppression de la liste des contacts sélectionnés si existante pour ne pas remplir inutilement l'url lors de l'appel àa la liste standard des contacts (sinon bug)
+$TParamURL = $_REQUEST;
+unset($TParamURL['toselect']);
+$TParamURL_HTTP_build_query = http_build_query($TParamURL);
+
 // Si la liste est clôturée, on renvoie vers l'onlet fiche
 if($object->status > 1) header('Location: '.dol_buildpath('/distributionlist/distributionlist_card.php', 1).'?id='.$object->id);
 
+// Enregistrement du filtre
+if (GETPOST('button_search_x', 'alpha') || GETPOST('button_search.x', 'alpha') || GETPOST('button_search', 'alpha')) {    // All tests are required to be compatible with all browsers
+
+}
+
+// Ajout des contacts à la liste de diffusion
 if($massaction === 'distributionlist_add_contacts') {
 
 	if(!empty($contacts)) {
@@ -115,16 +126,12 @@ $help_url = '';
 
 llxHeader('', $langs->trans('DistributionList'), $help_url);
 
-// Suppression de la liste des contacts sélectionnés si existante pour ne pas remplir inutilement l'url lors de l'appel àa la liste standard des contacts (sinon bug)
-$TParamURL = $_REQUEST;
-unset($TParamURL['toselect']);
-
 ?>
 
 	<script type="text/javascript" language="javascript">
 		$(document).ready(function() {
 			$.ajax({
-				url:"<?php print dol_buildpath('/contact/list.php', 2).'?origin_page=distributionlist_contact&'.http_build_query($TParamURL); ?>"
+				url:"<?php print dol_buildpath('/contact/list.php', 2).'?origin_page=distributionlist_contact&'.$TParamURL_HTTP_build_query; ?>"
 			}).done(function(data) {
 
 				// On remplace les liens de la pagination pour rester sur la liste de diffusion en cas de changement de page

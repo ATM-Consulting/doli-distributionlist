@@ -32,6 +32,8 @@ DistributionListAddContacts=Ajouter les contacts sélectionnés à la liste de d
 DistributionListNbAddedContacts=%s nouveau(x) contact(s) ajouté(s) à la liste de diffusion
 DistributionListDeleteContacts=Supprimer les contacts sélectionnés de la liste de diffusion
 DistributionListNbDeletedContacts=%s contact(s) supprimé(s) de la liste de diffusion
+ListOfContactsAddressesDistributionList=Liste des contacts/adresses présents dans la liste de diffusion
+#ListOfContactsAddressesDistributionListContacts=
 
 # Module label 'ModuleDistributionListName'
 ModuleDistributionListName = Listes de diffusion

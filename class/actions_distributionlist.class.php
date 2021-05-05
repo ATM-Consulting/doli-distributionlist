@@ -4,14 +4,19 @@ class ActionsDistributionlist {
 
 	function doActions($parameters, &$object, &$action, $hookmanager) {
 
-		global $user;
+		global $user, $langs, $titre;
 
 		$TContext = explode(':', $parameters['context']);
 		if(in_array('contactlist', $TContext)) {
 			$origin_page = GETPOST('origin_page');
 			if($origin_page === 'distributionlist_contact' || $origin_page === 'distributionlist_card') {
+
+				// On personnalise le titre de la liste des contacts dans le contexte d'une liste de diffusion
+				if($origin_page === 'distributionlist_card') $titre = $langs->trans('ListOfContactsAddressesDistributionList');
+
 				// On retire la permission de créer dans ce contexte pour enlever le lien "Nouveau contact/adresse"
 				unset($user->rights->societe->contact->creer);
+
 			}
 		}
 	}

@@ -124,6 +124,9 @@ $upload_dir = $conf->distributionlist->multidir_output[isset($object->entity) ? 
  * Actions
  */
 
+// Retrait des droits network car ici il n'y pas lieu d'effectuer ce type d'action
+unset($user->rights->network);
+
 $parameters = array();
 $reshook = $hookmanager->executeHooks('doActions', $parameters, $object, $action); // Note that $action and $object may have been modified by some hooks
 if ($reshook < 0) setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
