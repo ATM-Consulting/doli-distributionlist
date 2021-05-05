@@ -98,13 +98,11 @@ class DistributionListSocpeopleFilter extends CommonObject
 		'label' => array('type'=>'varchar(255)', 'label'=>'Label', 'enabled'=>'1', 'position'=>30, 'notnull'=>0, 'visible'=>1, 'searchall'=>1, 'css'=>'minwidth200', 'help'=>"Help text", 'showoncombobox'=>'1',),
 		'date_creation' => array('type'=>'datetime', 'label'=>'DateCreation', 'enabled'=>'1', 'position'=>500, 'notnull'=>1, 'visible'=>-2,),
 		'url_params' => array('type'=>'texte', 'label'=>'URLParams', 'enabled'=>'1', 'position'=>50, 'notnull'=>1, 'visible'=>0,),
-		'fk_distributionlist' => array('type'=>'integer', 'label'=>'DistributionList', 'enabled'=>'1', 'position'=>50, 'notnull'=>-1, 'visible'=>0, 'index'=>1,),
 	);
 	public $rowid;
 	public $label;
 	public $date_creation;
 	public $url_params;
-	public $fk_distributionlist;
 	// END MODULEBUILDER PROPERTIES
 
 

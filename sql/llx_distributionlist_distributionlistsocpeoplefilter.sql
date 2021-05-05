@@ -19,7 +19,6 @@ CREATE TABLE llx_distributionlist_distributionlistsocpeoplefilter(
 	rowid integer AUTO_INCREMENT PRIMARY KEY NOT NULL, 
 	label varchar(255), 
 	date_creation datetime NOT NULL, 
-	url_params text NOT NULL,
-	fk_distributionlist integer
+	url_params text NOT NULL
 	-- END MODULEBUILDER FIELDS
 ) ENGINE=innodb;

@@ -179,7 +179,7 @@ if (empty($reshook))
 
 if($massaction === 'distributionlist_delete_contacts') {
 
-	if(!empty($contacts)) {
+	if(!empty($contacts) && $object->status < 2) {
 		$nb_del = 0;
 		foreach ($contacts as $id_contact) {
 			$o = new DistributionListSocpeople($db);
@@ -191,7 +191,11 @@ if($massaction === 'distributionlist_delete_contacts') {
 				}
 			}
 		}
-		if(!empty($nb_del)) setEventMessage($langs->trans('DistributionListNbDeletedContacts', $nb_del));
+		if(!empty($nb_del)) {
+			setEventMessage($langs->trans('DistributionListNbDeletedContacts', $nb_del));
+			$object->nb_contacts -= $nb_del;
+			$object->update($user);
+		}
 	}
 
 }
@@ -213,7 +217,7 @@ llxHeader('', $title, $help_url);
 $o = new DistributionListSocpeople($db);
 $TRes = $o->fetchAll('', '', 0, 0, array('customsql'=>' fk_distributionlist = '.GETPOST('id', 'int')));
 
-// Suppression de la liste des contacts sélectionnés si existante pour ne pas remplir inutilement l'url lors de l'appel àa la liste standard des contacts (sinon bug)
+// Suppression de la liste des contacts sélectionnés si existante pour ne pas remplir inutilement l'url lors de l'appel à la liste standard des contacts (sinon bug)
 $TParamURL = $_REQUEST;
 unset($TParamURL['toselect']);
 
@@ -244,7 +248,7 @@ unset($TParamURL['toselect']);
 
 				// Suppression des cases à cocher pour ne plus pouvoir toucher aux contacts présents dans la liste de diffusion si cette dernière est clôturée
 				<?php if($object->status > 1) { ?>
-					form_contacts.find('input[name*="toselect"], input[name*="checkallactions"]').hide();
+					form_contacts.find('input[name*="toselect"], input[name*="checkallactions"]').remove();
 				<?php } ?>
 
 				// On affiche la liste des contacts

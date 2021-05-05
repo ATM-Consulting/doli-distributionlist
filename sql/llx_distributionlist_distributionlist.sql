@@ -30,6 +30,7 @@ CREATE TABLE llx_distributionlist_distributionlist(
 	fk_user_modif integer,
     fk_user_cloture integer,
     fk_user_valid integer,
+    nb_contacts integer,
 	import_key varchar(14), 
 	status smallint NOT NULL,
 	date_cloture date

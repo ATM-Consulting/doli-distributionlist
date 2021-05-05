@@ -124,7 +124,7 @@ if($action === 'add_filter') {
 // Ajout des contacts à la liste de diffusion
 if($massaction === 'distributionlist_add_contacts') {
 
-	if(!empty($contacts)) {
+	if(!empty($contacts) && $object->status < 2) {
 		$nb_add = 0;
 		foreach ($contacts as $id_contact) {
 			$o = new DistributionListSocpeople($db);
@@ -136,7 +136,11 @@ if($massaction === 'distributionlist_add_contacts') {
 				if($o->create($user) > 0) $nb_add++;
 			}
 		}
-		if(!empty($nb_add)) setEventMessage($langs->trans('DistributionListNbAddedContacts', $nb_add));
+		if(!empty($nb_add)) {
+			setEventMessage($langs->trans('DistributionListNbAddedContacts', $nb_add));
+			$object->nb_contacts += $nb_add;
+			$object->update($user);
+		}
 	}
 
 }
@@ -249,7 +253,7 @@ if ($id > 0 || !empty($ref)) {
 	print '<div class="underbanner clearboth"></div><br />';
 
 	$filter = new DistributionListSocpeopleFilter($db);
-	$TFilters = $filter->fetchAll('', '', 0, 0, array('customsql'=> ' fk_distributionlist = '.$id), $filtermode = 'AND');
+	$TFilters = $filter->fetchAll('', '', 0, 0, array(), $filtermode = 'AND');
 
 	print '<div class="tabsAction">';
 	print '<form name="set_filter" method="POST" action="'.$_SERVER['PHP_SELF'].'?action=set_filter&id='.$id.'">';
@@ -258,9 +262,12 @@ if ($id > 0 || !empty($ref)) {
 
 		$TFilterDisplay=array();
 		foreach ($TFilters as $obj) $TFilterDisplay[$obj->id] = $obj->label;
-		print Form::selectarray('filter', $TFilterDisplay, $filter_id, 1);
-		print '&emsp;<input class="butAction" type="SUBMIT" value="'.$langs->trans('AdvTgtLoadFilter').'"/>';
+		if(!empty(GETPOST('button_removefilter', 'alpha')) || !empty(GETPOST('button_removefilter.x', 'alpha')) || !empty(GETPOST('button_removefilter_x', 'alpha'))) {
+			$default_val = '';
+		} else $default_val = $filter_id;
 
+		print Form::selectarray('filter', $TFilterDisplay, $default_val, 1);
+		print '&emsp;<input class="butAction" type="SUBMIT" value="'.$langs->trans('AdvTgtLoadFilter').'"/>';
 
 	}
 
