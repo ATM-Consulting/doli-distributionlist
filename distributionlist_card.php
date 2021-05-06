@@ -221,6 +221,24 @@ $TRes = $o->fetchAll('', '', 0, 0, array('customsql'=>' fk_distributionlist = '.
 $TParamURL = $_REQUEST;
 unset($TParamURL['toselect']);
 
+if(!empty($conf->listincsv->enabled)) {
+
+	// Récupération du bouton listincsv
+	dol_include_once('/listincsv/lib/listincsv.lib.php');
+	$download = getListInCSVDownloadLink();
+
+	// URL spécifique pour listincsv
+	// Explication : Sur l'onglet distributionlist_card, on fait un appel ajax à la liste des contacts avec le paramètre origin_page=distributionlist_card et l'id de la liste de diffusion.
+	// Tout ça est intercepté par un hook printFieldListWhere de la liste des contacts de manière à n'afficher que les contacts qui font partie de la lite de distribution,
+	// or si change le nombre d'éléments affichés via la liste déroulante qui contient les choix 10, 25, 50, 100, 500, etc... le paramètre url limit empêche list in csv de récupérer tous les contacts de la liste de diffusion
+	// à cause de la requête sql dont le nombre de résultats est limité
+	$TParamURLForListInCSV = $TParamURL;
+	unset($TParamURLForListInCSV['limit']);
+
+}
+
+if($action !== 'create' && $action !== 'edit') {
+
 ?>
 
 	<script type="text/javascript" language="javascript">
@@ -254,15 +272,27 @@ unset($TParamURL['toselect']);
 				// On affiche la liste des contacts
 				$("#inclusion").append(form_contacts);
 
+				<?php
+					if(!empty($conf->listincsv->enabled)) {
 
-				// Copie d'un bout de code dans /core/js/lib_foot.js.php car impossible de l'utiliser sinon
-				<?php include dol_buildpath('/distributionlist/js/distributionlist.js'); ?>
+						?>
+						// Ajout d'une url spécifique au formulaire pour listincsv
+						form_contacts.attr('data-listincsv-url', "<?php print dol_buildpath('/contact/list.php', 1).'?&origin_page=distributionlist_card&'.http_build_query($TParamURLForListInCSV); ?>");
+
+						<?php
+
+						print "$('div.fiche div.titre').first().append('".$download."');";
+					}
+				?>
 
 			});
+
 		});
 	</script>
 
 <?php
+
+} else $user->rights->listincsv=array(); // Pour empêcher d'ajouter le boutton listincsv en mode edit et create
 
 // Part to create
 if ($action == 'create')

@@ -181,9 +181,6 @@ llxHeader('', $langs->trans('DistributionList'), $help_url);
 				// On affiche la liste des contacts
 				$("#inclusion").append(form_contacts);
 
-				// Copie d'un bout de code dans /core/js/lib_foot.js.php car impossible de l'utiliser sinon
-				<?php include dol_buildpath('/distributionlist/js/distributionlist.js'); ?>
-
 			});
 		});
 	</script>
