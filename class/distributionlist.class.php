@@ -305,6 +305,27 @@ class DistributionList extends CommonObject
 			}
 		}
 
+		// Copie des contacts présents dans la liste d'origine
+		if(!$error) {
+
+			$o_origin = new DistributionListSocpeople($this->db);
+
+			$TRes = $o_origin->fetchAll('', '', 0, 0, array('customsql'=>' fk_distributionlist = '.$this->id));
+			if(!empty($TRes)) {
+				$nb_add=0;
+				foreach ($TRes as $obj) {
+
+					$o = new DistributionListSocpeople($this->db);
+					$o->fk_socpeople = $obj->fk_socpeople;
+					$o->fk_distributionlist = $object->id;
+					if($o->create($user) > 0) $nb_add++;
+
+				}
+				$this->nb_contacts = $nb_add;
+				$this->update($user);
+			}
+		}
+
 		unset($object->context['createfromclone']);
 
 		// End
@@ -446,8 +467,8 @@ class DistributionList extends CommonObject
 	 */
 	public function delete(User $user, $notrigger = false)
 	{
+		$this->deleteAllContacts($user);
 		return $this->deleteCommon($user, $notrigger);
-		//return $this->deleteCommon($user, $notrigger, 1);
 	}
 
 	/**
@@ -459,6 +480,7 @@ class DistributionList extends CommonObject
 	 */
 	public function deleteAllContacts(User $user, $notrigger = false)
 	{
+		require_once __DIR__ . '/distributionlistsocpeople.class.php';
 		$nb_del = 0;
 
 		$o = new DistributionListSocpeople($this->db);
