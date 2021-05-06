@@ -78,6 +78,7 @@ $backtopage = GETPOST('backtopage', 'alpha');
 $backtopageforcancel = GETPOST('backtopageforcancel', 'alpha');
 $massaction = GETPOST('massaction', 'alpha');
 $contacts = GETPOST('toselect');
+$nb_deleted_contacts = GETPOST('nb_deleted_contacts', 'int');
 
 // Initialize technical objects
 $object = new DistributionList($db);
@@ -202,8 +203,12 @@ if($massaction === 'distributionlist_delete_contacts' && $permissiontoadd && $ob
 
 	$nb_del = $object->deleteAllContacts($user);
 	setEventMessage('DistributionListNbDeletedContacts', $nb_del);
-	header('Location: '.$_SERVER['PHP_SELF'].'?id='.$id);
+	header('Location: '.$_SERVER['PHP_SELF'].'?id='.$id.'&nb_deleted_contacts='.$nb_del);
 	exit;
+
+} elseif(!empty($nb_deleted_contacts)) {
+
+	setEventMessage($langs->trans('DistributionListNbDeletedContacts', $nb_deleted_contacts));
 
 }
 
