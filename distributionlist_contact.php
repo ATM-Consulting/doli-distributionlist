@@ -87,7 +87,10 @@ $form = new Form($db);
 //include DOL_DOCUMENT_ROOT.'/core/actions_changeselectedfields.inc.php';
 
 // Si la liste est clôturée, on renvoie vers l'onlet fiche
-if($object->status > 1) header('Location: '.dol_buildpath('/distributionlist/distributionlist_card.php', 1).'?id='.$object->id);
+if($object->status > 1) {
+	header('Location: '.dol_buildpath('/distributionlist/distributionlist_card.php', 1).'?id='.$object->id);
+	exit;
+}
 
 // Suppression de la liste des contacts sélectionnés si existante pour ne pas remplir inutilement l'url lors de l'appel àa la liste standard des contacts (sinon bug)
 $TParamURL = $_REQUEST;
@@ -114,6 +117,7 @@ if($action === 'add_filter') {
 	$filter->create($user);
 	// Pour éviter de réenregistrer le filtre en cas de réactualisation de la page
 	header('Location: '.$_SERVER['PHP_SELF'].'?id='.$id.'&action=set_filter&filter='.$filter->id);
+	exit;
 
 } elseif($action === 'set_filter') {
 	$f = new DistributionListSocpeopleFilter($db);

@@ -65,7 +65,7 @@ dol_include_once('/distributionlist/class/distributionlistsocpeople.class.php');
 dol_include_once('/distributionlist/lib/distributionlist_distributionlist.lib.php');
 
 // Load translation files required by the page
-$langs->loadLangs(array("distributionlist@distributionlist", "other"));
+$langs->loadLangs(array("distributionlist@distributionlist", "other", "mails"));
 
 // Get parameters
 $id = GETPOST('id', 'int');
@@ -125,7 +125,7 @@ $upload_dir = $conf->distributionlist->multidir_output[isset($object->entity) ? 
  */
 
 // Retrait des droits network car ici il n'y pas lieu d'effectuer ce type d'action
-unset($user->rights->network);
+//unset($user->rights->network);
 
 $parameters = array();
 $reshook = $hookmanager->executeHooks('doActions', $parameters, $object, $action); // Note that $action and $object may have been modified by some hooks
@@ -177,9 +177,9 @@ if (empty($reshook))
 }
 
 
-if($massaction === 'distributionlist_delete_contacts') {
+if($massaction === 'distributionlist_delete_contacts' && $permissiontoadd && $object->status < DistributionList::STATUS_CLOSED) {
 
-	if(!empty($contacts) && $object->status < 2) {
+	if(!empty($contacts) && $object->status < DistributionList::STATUS_CLOSED) {
 		$nb_del = 0;
 		foreach ($contacts as $id_contact) {
 			$o = new DistributionListSocpeople($db);
@@ -197,6 +197,13 @@ if($massaction === 'distributionlist_delete_contacts') {
 			$object->update($user);
 		}
 	}
+
+} elseif($action === 'confirm_reset_list' && $confirm === 'yes' && $permissiontoadd && $object->status < DistributionList::STATUS_CLOSED) {
+
+	$nb_del = $object->deleteAllContacts($user);
+	setEventMessage('DistributionListNbDeletedContacts', $nb_del);
+	header('Location: '.$_SERVER['PHP_SELF'].'?id='.$id);
+	exit;
 
 }
 
@@ -436,6 +443,12 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"].'?id='.$object->id, $langs->trans('ReOpen'), $langs->trans('ConfirmReopenDistributionList', $object->ref), 'confirm_reopen', '', 0, 1);
 	}
 
+	if($action == 'reset_list') {
+		// Create an array for form
+		$formquestion = array();
+		$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"].'?id='.$object->id, $langs->trans('TargetsReset'), $langs->trans('ConfirmDeleteAllContactsDistributionList', $object->ref), 'confirm_reset_list', '', 0, 1);
+	}
+
 	// Confirmation of action xxxx
 	if ($action == 'xxx')
 	{
@@ -660,7 +673,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 			{
 				if ($object->status == $object::STATUS_VALIDATED)
 				{
-					print '<a class="butActionDelete" href="'.$_SERVER["PHP_SELF"].'?id='.$object->id.'&action=close">'.$langs->trans("Close").'</a>'."\n";
+					print '<a class="butAction" href="'.$_SERVER["PHP_SELF"].'?id='.$object->id.'&action=close">'.$langs->trans("Close").'</a>'."\n";
 				}
 				elseif($object->status > 0)
 				{
@@ -668,6 +681,11 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 				}
 			}
 
+			// Supprimer tous les contacts de la liste de diffusion
+			if ($object->status < $object::STATUS_CLOSED && $permissiontoadd && $object->nb_contacts > 0)
+			{
+				print '<a class="butActionDelete" href="'.$_SERVER["PHP_SELF"].'?id='.$object->id.'&amp;action=reset_list">'.$langs->trans('TargetsReset').'</a>'."\n";
+			}
 
 			// Delete (need delete permission, or if draft, just need create/modify permission)
 			if ($permissiontodelete || ($object->status == $object::STATUS_DRAFT && $permissiontoadd))

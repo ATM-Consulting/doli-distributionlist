@@ -99,8 +99,8 @@ class DistributionList extends CommonObject
 		'entity' =>array('type'=>'integer', 'label'=>'Entity', 'default'=>1, 'enabled'=>1, 'visible'=>-2, 'notnull'=>1, 'position'=>20, 'index'=>1),
 		'label' => array('type'=>'varchar(255)', 'label'=>'Label', 'enabled'=>'1', 'position'=>30, 'notnull'=>0, 'visible'=>1, 'searchall'=>1, 'css'=>'minwidth200', 'help'=>"Help text", 'showoncombobox'=>'1',),
 		'description' => array('type'=>'text', 'label'=>'Description', 'enabled'=>'1', 'position'=>60, 'notnull'=>0, 'visible'=>3,),
-		'nb_contacts' => array('type'=>'integer', 'label'=>'DistributionListNbContactsInList', 'enabled'=>'1', 'position'=>61, 'notnull'=>0, 'visible'=>2,),
-		'date_cloture' => array('type'=>'date', 'label'=>'DateClosing', 'enabled'=>'1', 'position'=>62, 'notnull'=>0, 'visible'=>4,),
+		'nb_contacts' => array('type'=>'integer', 'label'=>'DistributionListNbContactsInList', 'enabled'=>'1', 'position'=>61, 'notnull'=>1, 'visible'=>2, 'default'=>0),
+		'date_cloture' => array('type'=>'date', 'label'=>'DateClosing', 'enabled'=>'1', 'position'=>62, 'notnull'=>1, 'visible'=>4, 'default'=>0),
 		'note_public' => array('type'=>'html', 'label'=>'NotePublic', 'enabled'=>'1', 'position'=>63, 'notnull'=>0, 'visible'=>0,),
 		'note_private' => array('type'=>'html', 'label'=>'NotePrivate', 'enabled'=>'1', 'position'=>64, 'notnull'=>0, 'visible'=>0,),
 		'date_creation' => array('type'=>'datetime', 'label'=>'DateCreation', 'enabled'=>'1', 'position'=>500, 'notnull'=>1, 'visible'=>-2,),
@@ -221,6 +221,7 @@ class DistributionList extends CommonObject
 	{
 		if(empty($this->fk_user_creat)) $this->fk_user_creat = $user->id;
 		$this->status = (int)$this->status;
+		$this->nb_contacts = (int) $this->nb_contacts;
 		return $this->createCommon($user, $notrigger);
 	}
 
@@ -447,6 +448,30 @@ class DistributionList extends CommonObject
 	{
 		return $this->deleteCommon($user, $notrigger);
 		//return $this->deleteCommon($user, $notrigger, 1);
+	}
+
+	/**
+	 * Delete object in database
+	 *
+	 * @param User $user       User that deletes
+	 * @param bool $notrigger  false=launch triggers after, true=disable triggers
+	 * @return int             <0 if KO, >0 if OK
+	 */
+	public function deleteAllContacts(User $user, $notrigger = false)
+	{
+		$nb_del = 0;
+
+		$o = new DistributionListSocpeople($this->db);
+
+		$TRes = $o->fetchAll('', '', 0, 0, array('customsql'=>' fk_distributionlist = '.$this->id));
+		if(!empty($TRes)) {
+			foreach ($TRes as $obj) {
+				if($obj->deleteCommon($user, $notrigger) > 0) $nb_del++;
+			}
+			$this->nb_contacts = 0;
+			$this->update($user);
+		}
+		return $nb_del;
 	}
 
 	/**
@@ -708,8 +733,14 @@ class DistributionList extends CommonObject
 		$label = '<u>'.$langs->trans("DistributionList").'</u>';
 		$label .= '<br>';
 		$label .= '<b>'.$langs->trans('Ref').':</b> '.$this->ref;
+		$label .= '<br>';
+		$label .= '<b>'.$langs->trans('Label').':</b> '.$this->label;
 		if (isset($this->status)) {
 			$label .= '<br><b>'.$langs->trans("Status").":</b> ".$this->getLibStatut(5);
+		}
+		if($this->status > 1 && !empty($this->date_cloture)) {
+			$label .= '<br>';
+			$label .= '<b>'.$langs->trans('DateClosing').':</b> '.date('d/m/Y', $this->date_cloture);
 		}
 
 		$url = dol_buildpath('/distributionlist/distributionlist_card.php', 1).'?id='.$this->id;

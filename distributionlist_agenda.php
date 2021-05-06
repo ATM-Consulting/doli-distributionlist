@@ -140,7 +140,7 @@ if ($object->id > 0)
 	$head = distributionlistPrepareHead($object);
 
 
-	dol_fiche_head($head, 'agenda', $langs->trans("DistributionList"), -1, 'object_'.$object->picto);
+	dol_fiche_head($head, 'agenda', $langs->trans("DistributionList"), -1, $object->picto);
 
 	// Object card
 	// ------------------------------------------------------------
@@ -249,7 +249,7 @@ if ($object->id > 0)
 		$filters['search_agenda_label'] = $search_agenda_label;
 
 		// TODO Replace this with same code than into list.php
-		show_actions_done($conf, $langs, $db, $object, null, 0, $actioncode, '', $filters, $sortfield, $sortorder, 'mymmodule');
+		show_actions_done($conf, $langs, $db, $object, null, 0, $actioncode, '', $filters, $sortfield, $sortorder, '');
 	}
 }
 
