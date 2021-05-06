@@ -87,7 +87,7 @@ $form = new Form($db);
 //include DOL_DOCUMENT_ROOT.'/core/actions_changeselectedfields.inc.php';
 
 // Si la liste est clôturée, on renvoie vers l'onlet fiche
-if($object->status > 1) {
+if($object->status > 1 || empty($permissiontoadd)) {
 	header('Location: '.dol_buildpath('/distributionlist/distributionlist_card.php', 1).'?id='.$object->id);
 	exit;
 }
@@ -128,7 +128,7 @@ if($action === 'add_filter') {
 // Ajout des contacts à la liste de diffusion
 if($massaction === 'distributionlist_add_contacts') {
 
-	if(!empty($contacts) && $object->status < 2) {
+	if(!empty($contacts) && $object->status < DistributionList::STATUS_CLOSED) {
 		$nb_add = 0;
 		foreach ($contacts as $id_contact) {
 			$o = new DistributionListSocpeople($db);

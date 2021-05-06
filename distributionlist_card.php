@@ -106,7 +106,7 @@ include DOL_DOCUMENT_ROOT.'/core/actions_fetchobject.inc.php'; // Must be includ
 
 $permissiontoread = $user->rights->distributionlist->distributionlist->read;
 $permissiontoadd = $user->rights->distributionlist->distributionlist->write; // Used by the include of actions_addupdatedelete.inc.php and actions_lineupdown.inc.php
-$permissiontodelete = $user->rights->distributionlist->distributionlist->delete || ($permissiontoadd && isset($object->status) && $object->status == $object::STATUS_DRAFT);
+$permissiontodelete = $user->rights->distributionlist->distributionlist->delete || ($permissiontoadd && isset($object->status) && $object->status == $object::STATUS_DRAFT && empty($object->nb_contacts));
 $permissionnote = $user->rights->distributionlist->distributionlist->write; // Used by the include of actions_setnotes.inc.php
 $permissiondellink = $user->rights->distributionlist->distributionlist->write; // Used by the include of actions_dellink.inc.php
 $upload_dir = $conf->distributionlist->multidir_output[isset($object->entity) ? $object->entity : 1];
@@ -272,7 +272,7 @@ if($action !== 'create' && $action !== 'edit') {
 				form_contacts.attr('action', form_contacts.attr('action') + '?id=' + <?php print $id; ?>);
 
 				// Suppression des cases à cocher pour ne plus pouvoir toucher aux contacts présents dans la liste de diffusion si cette dernière est clôturée
-				<?php if($object->status > 1) { ?>
+				<?php if($object->status > 1 || empty($permissiontoadd)) { ?>
 					form_contacts.find('input[name*="toselect"], input[name*="checkallactions"]').remove();
 				<?php } ?>
 
@@ -688,7 +688,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 			}
 
 			// Delete (need delete permission, or if draft, just need create/modify permission)
-			if ($permissiontodelete || ($object->status == $object::STATUS_DRAFT && $permissiontoadd))
+			if ($permissiontodelete)
 			{
 				print '<a class="butActionDelete" href="'.$_SERVER["PHP_SELF"].'?id='.$object->id.'&amp;action=delete">'.$langs->trans('Delete').'</a>'."\n";
 			}

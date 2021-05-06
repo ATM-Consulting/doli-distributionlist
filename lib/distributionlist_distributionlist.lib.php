@@ -29,7 +29,7 @@
  */
 function distributionlistPrepareHead($object)
 {
-	global $db, $langs, $conf;
+	global $db, $langs, $conf, $user;
 
 	$langs->load("distributionlist@distributionlist");
 
@@ -41,7 +41,7 @@ function distributionlistPrepareHead($object)
 	$head[$h][2] = 'card';
 	$h++;
 
-	if($object->status < 2) {
+	if($object->status < DistributionList::STATUS_CLOSED && $user->rights->distributionlist->distributionlist->write) {
 		$head[$h][0] = dol_buildpath("/distributionlist/distributionlist_contact.php", 1) . '?id=' . $object->id;
 		$head[$h][1] = $langs->trans("AddContactToDistributionList");
 		$head[$h][2] = 'contact';
