@@ -71,4 +71,69 @@ class ActionsDistributionlist {
 
 	}
 
+	function printFieldListOption($parameters, &$object, &$action, $hookmanager) {
+
+		global $db;
+
+		$TContext = explode(':', $parameters['context']);
+		if(in_array('contactlist', $TContext)) {
+			$origin_page = GETPOST('origin_page');
+			if($origin_page === 'distributionlist_card') $hookmanager->resPrint = '<td class="liste_titre"></td>';
+		}
+
+		return 1;
+
+	}
+
+	function printFieldListTitle($parameters, &$object, &$action, $hookmanager) {
+
+		global $langs;
+
+		$TContext = explode(':', $parameters['context']);
+		if(in_array('contactlist', $TContext)) {
+			$origin_page = GETPOST('origin_page');
+			if ($origin_page === 'distributionlist_card') $hookmanager->resPrint = print_liste_field_titre($langs->trans('DistributionListUserWhoAdd'), $_SERVER["PHP_SELF"], "", "", $param, '', $sortfield, $sortorder, 'center nowrap ');
+		}
+
+		return 1;
+
+	}
+
+	function printFieldListValue($parameters, &$object, &$action, $hookmanager) {
+
+		global $db, $TDistributionListLoadedusers;
+
+		if(empty($TDistributionListLoadedusers)) $TDistributionListLoadedusers = array();
+
+		$TContext = explode(':', $parameters['context']);
+		if(in_array('contactlist', $TContext)) {
+			$origin_page = GETPOST('origin_page');
+			if ($origin_page === 'distributionlist_card') {
+
+				require_once DOL_DOCUMENT_ROOT . '/user/class/user.class.php';
+				require_once __DIR__ . './../class/distributionlistsocpeople.class.php';
+
+				$contact_id = $parameters['obj']->rowid;
+				$o = new DistributionListSocpeople($db);
+				$TRes = $o->fetchAll('', '', 0, 0, array('customsql' => ' fk_distributionlist = ' . GETPOST('id', 'int') . ' AND fk_socpeople = ' . $contact_id));
+				if (!empty($TRes)) {
+					$uid = $TRes[key($TRes)]->fk_user_creat;
+					if (!empty($TDistributionListLoadedusers[$uid])) $hookmanager->resPrint = $TDistributionListLoadedusers[$uid];
+					else {
+						$u = new User($db);
+						$u->fetch($uid);
+						$TDistributionListLoadedusers[$uid] = '<td class="center">' . $u->getNomUrl(1) . '</td>';
+						$hookmanager->resPrint = $TDistributionListLoadedusers[$uid];
+					}
+				}
+			}
+
+		}
+
+		return 1;
+
+	}
+
+	// function printFieldListFooter
+
 }
