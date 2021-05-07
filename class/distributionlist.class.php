@@ -314,16 +314,9 @@ class DistributionList extends CommonObject
 			$TRes = $o_origin->fetchAll('', '', 0, 0, array('customsql'=>' fk_distributionlist = '.$this->id));
 			if(!empty($TRes)) {
 				$nb_add=0;
-				foreach ($TRes as $obj) {
-
-					$o = new DistributionListSocpeople($this->db);
-					$o->fk_socpeople = $obj->fk_socpeople;
-					$o->fk_distributionlist = $object->id;
-					if($o->create($user) > 0) $nb_add++;
-
-				}
-				$this->nb_contacts = $nb_add;
-				$this->update($user);
+				foreach ($TRes as $obj) $nb_add += $object->addContact($user, $obj->fk_socpeople, false, false);
+				$object->nb_contacts = $nb_add;
+				$object->update($user);
 			}
 		}
 
@@ -470,6 +463,67 @@ class DistributionList extends CommonObject
 	{
 		$this->deleteAllContacts($user);
 		return $this->deleteCommon($user, $notrigger);
+	}
+
+	/**
+	 * Add contact in distribution list
+	 *
+	 * @param User $user        User that deletes
+	 * @param int $fk_socpeople id of contact to add in distribution list
+	 * @param bool $notrigger   false=launch triggers after, true=disable triggers
+	 * @param bool $set_new_nb_contacts   false=nb_contacts attribute is not updated in database, true=nb_contacts attribute is updated in database
+	 * @return int             <0 if KO, >0 if OK
+	 */
+	public function addContact(User $user, $fk_socpeople, $notrigger = false, $set_new_nb_contacts=true)
+	{
+		require_once __DIR__ . '/distributionlistsocpeople.class.php';
+
+		$o = new DistributionListSocpeople($this->db);
+		$TRes = $o->fetchAll('', '', 0, 0, array('customsql'=>' fk_socpeople = '.$fk_socpeople.' AND fk_distributionlist = '.$this->id));
+
+		if(empty($TRes)) { // N'existe pas encore dans la liste
+			$o->fk_socpeople = $fk_socpeople;
+			$o->fk_distributionlist = $this->id;
+			$res = $o->create($user);
+			if($res > 0) {
+				if($set_new_nb_contacts) {
+					$this->nb_contacts+=1;
+					$this->update($user);
+				}
+				return 1;
+			} else return -1;
+		} else return 0; // Existe déjà dans la liste
+	}
+
+	/**
+	 * Delete contact of distribution list
+	 *
+	 * @param User $user        User that deletes
+	 * @param int $fk_socpeople id of contact to remove from distribution list
+	 * @param bool $notrigger   false=launch triggers after, true=disable triggers
+	 * @param bool $set_new_nb_contacts   false=nb_contacts attribute is not updated in database, true=nb_contacts attribute is updated in database
+	 * @return int             <0 if KO, >0 if OK
+	 */
+	public function deleteContact(User $user, $fk_socpeople, $notrigger = false, $set_new_nb_contacts=true)
+	{
+
+		require_once __DIR__ . '/distributionlistsocpeople.class.php';
+
+		$o = new DistributionListSocpeople($this->db);
+		$TRes = $o->fetchAll('', '', 0, 0, array('customsql'=>' fk_socpeople = '.$fk_socpeople.' AND fk_distributionlist = '.$this->id));
+
+		if(!empty($TRes)) {
+			$obj = $TRes[key($TRes)];
+			$res = $obj->delete($user);
+			if($res > 0) {
+				if($set_new_nb_contacts) {
+					$this->nb_contacts-=1;
+					$this->update($user);
+				}
+				return 1;
+
+			} else return -1;
+		}
 	}
 
 	/**

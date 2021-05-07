@@ -130,16 +130,7 @@ if($massaction === 'distributionlist_add_contacts') {
 
 	if(!empty($contacts) && $object->status < DistributionList::STATUS_CLOSED) {
 		$nb_add = 0;
-		foreach ($contacts as $id_contact) {
-			$o = new DistributionListSocpeople($db);
-			$TRes = $o->fetchAll('', '', 0, 0, array('customsql'=>' fk_socpeople = '.$id_contact.' AND fk_distributionlist = '.GETPOST('id', 'int')));
-
-			if(empty($TRes)) { // N'existe pas déjà dans la liste
-				$o->fk_socpeople = $id_contact;
-				$o->fk_distributionlist = $id;
-				if($o->create($user) > 0) $nb_add++;
-			}
-		}
+		foreach ($contacts as $id_contact) $nb_add += $object->addContact($user, $id_contact, false, false);
 		if(!empty($nb_add)) {
 			setEventMessage($langs->trans('DistributionListNbAddedContacts', $nb_add));
 			$object->nb_contacts += $nb_add;

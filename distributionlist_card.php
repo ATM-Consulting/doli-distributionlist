@@ -182,16 +182,9 @@ if($massaction === 'distributionlist_delete_contacts' && $permissiontoadd && $ob
 
 	if(!empty($contacts) && $object->status < DistributionList::STATUS_CLOSED) {
 		$nb_del = 0;
-		foreach ($contacts as $id_contact) {
-			$o = new DistributionListSocpeople($db);
-			$TRes = $o->fetchAll('', '', 0, 0, array('customsql'=>' fk_socpeople = '.$id_contact.' AND fk_distributionlist = '.GETPOST('id', 'int')));
 
-			if(!empty($TRes)) {
-				foreach ($TRes as $obj) {
-					if($obj->delete($user) > 0) $nb_del++;
-				}
-			}
-		}
+		foreach ($contacts as $id_contact) $nb_del += $object->deleteContact($user, $id_contact, false, false);
+
 		if(!empty($nb_del)) {
 			setEventMessage($langs->trans('DistributionListNbDeletedContacts', $nb_del));
 			$object->nb_contacts -= $nb_del;
