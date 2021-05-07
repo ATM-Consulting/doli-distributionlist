@@ -293,7 +293,7 @@ if ($id > 0 || !empty($ref)) {
 		&& empty(GETPOST('button_removefilter_x', 'alpha'))
 		&& $action !== 'set_filter')	{ // All tests are required to be compatible with all browsers
 
-		print '<a class="butAction" href="'.$_SERVER['PHP_SELF'].'?action=add_filter&'.$TParamURL_HTTP_build_query.'">'.$langs->trans('AdvTgtSaveFilter').'</a>';
+		print '<a class="butAction" href="'.$_SERVER['PHP_SELF'].'?action=add_filter&'.$TParamURL_HTTP_build_query.'">'.$langs->trans('DistributionListSaveCurrentFilter').'</a>';
 
 	}
 

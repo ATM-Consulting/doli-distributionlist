@@ -27,6 +27,7 @@ DistributionListDelete=Supprimer liste de diffusion
 ConfirmValidateDistributionList=Êtes-vous sûr(e) de vouloir valider cette liste de diffusion sous la référence <STRONG>%s</STRONG> ?
 ConfirmCloseDistributionList=Êtes-vous sûr(e) de vouloir clôturer cette liste de diffusion ?
 ConfirmDeleteDistributionList=Êtes-vous sûr(e) de vouloir supprimer cette liste de diffusion ?
+DistributionListSaveCurrentFilter=Enregistrer le filtre actuel
 ConfirmDeleteDistributionListFilter=Êtes-vous sûr(e) de vouloir supprimer ce filtre ?
 ConfirmUnvalidateDistributionList=Êtes-vous sûr(e) de vouloir repasser la liste de diffusion <STRONG>%s</STRONG> au statut brouillon ?
 DistributionListUnvalidate=Repasser liste de diffusion au statut brouillon
