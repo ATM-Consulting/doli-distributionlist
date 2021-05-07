@@ -79,6 +79,19 @@ $contextpage = GETPOST('contextpage', 'aZ') ? GETPOST('contextpage', 'aZ') : 'di
 $backtopage = GETPOST('backtopage', 'alpha'); // Go back to a dedicated page
 $optioncss  = GETPOST('optioncss', 'aZ'); // Option for the css output (always '' except when 'print')
 
+$search_date_cloture_startday = GETPOST('search_date_cloture_startday', 'int');
+$search_date_cloture_startmonth = GETPOST('search_date_cloture_startmonth', 'int');
+$search_date_cloture_startyear = GETPOST('search_date_cloture_startyear', 'int');
+$search_date_cloture_endday = GETPOST('search_date_cloture_endday', 'int');
+$search_date_cloture_endmonth = GETPOST('search_date_cloture_endmonth', 'int');
+$search_date_cloture_endyear = GETPOST('search_date_cloture_endyear', 'int');
+
+if (!(GETPOST('button_removefilter_x', 'alpha') || GETPOST('button_removefilter.x', 'alpha') || GETPOST('button_removefilter', 'alpha'))) // All tests are required to be compatible with all browsers
+{
+	$search_date_cloture_start = dol_mktime(0, 0, 0, $search_date_cloture_startmonth, $search_date_cloture_startday, $search_date_cloture_startyear);
+	$search_date_cloture_end = dol_mktime(23, 59, 59, $search_date_cloture_endmonth, $search_date_cloture_endday, $search_date_cloture_endyear);
+}
+
 $id = GETPOST('id', 'int');
 
 // Load variable for pagination
@@ -110,9 +123,14 @@ if (!$sortorder) $sortorder = "ASC";
 // Initialize array of search criterias
 $search_all = GETPOST('search_all', 'alphanohtml') ? trim(GETPOST('search_all', 'alphanohtml')) : trim(GETPOST('sall', 'alphanohtml'));
 $search = array();
+
 foreach ($object->fields as $key => $val)
 {
 	if (GETPOST('search_'.$key, 'alpha') !== '') $search[$key] = GETPOST('search_'.$key, 'alpha');
+	elseif(strpos($key, 'date') !== false) {
+		if(!empty(${'search_'.$key.'_start'})) $search[$key.'_start'] = ${'search_'.$key.'_start'};
+		if(!empty(${'search_'.$key.'_end'})) $search[$key.'_end'] = ${'search_'.$key.'_end'};
+	}
 }
 
 // List of fields to search into when doing a "search in all"
@@ -188,6 +206,8 @@ if (empty($reshook))
 		{
 			$search[$key] = '';
 		}
+		$search_date_cloture_start = $search_date_cloture_end = $search_date_cloture_startday = $search_date_cloture_startmonth = $search_date_cloture_startyear = $search_date_cloture_endday = $search_date_cloture_endmonth = $search_date_cloture_endyear = '';
+
 		$toselect = '';
 		$search_array_options = array();
 	}
@@ -242,14 +262,21 @@ else $sql .= " WHERE 1 = 1";
 foreach ($search as $key => $val)
 {
 	if ($key == 'status' && $search[$key] == -1) continue;
-	$mode_search = (($object->isInt($object->fields[$key]) || $object->isFloat($object->fields[$key])) ? 1 : 0);
-	if (strpos($object->fields[$key]['type'], 'integer:') === 0) {
-		if ($search[$key] == '-1') $search[$key] = '';
-		$mode_search = 2;
+	elseif (strpos($key, 'date') !== false) {
+		if(strpos($key, '_start') !== false && $search[$key] != '') $sql.= ' AND '.strtr($key, array('_start'=>'')).' >= "'.date('Y-m-d', $search[$key]).'"';
+		if(strpos($key, '_end') !== false && $search[$key] != '') $sql.= ' AND '.strtr($key, array('_end'=>'')).' <= "'.date('Y-m-d', $search[$key]).'"';
+	} else {
+		$mode_search = (($object->isInt($object->fields[$key]) || $object->isFloat($object->fields[$key])) ? 1 : 0);
+		if (strpos($object->fields[$key]['type'], 'integer:') === 0) {
+			if ($search[$key] == '-1') $search[$key] = '';
+			$mode_search = 2;
+		}
+		if ($search[$key] != '') $sql .= natural_search($key, $search[$key], (($key == 'status') ? 2 : $mode_search));
 	}
-	if ($search[$key] != '') $sql .= natural_search($key, $search[$key], (($key == 'status') ? 2 : $mode_search));
+	//var_dump($object->fields[$key]['type'], $mode_search);
 }
 if ($search_all) $sql .= natural_search(array_keys($fieldstosearchall), $search_all);
+
 //$sql.= dolSqlDateFilter("t.field", $search_xxxday, $search_xxxmonth, $search_xxxyear);
 // Add where from extra fields
 include DOL_DOCUMENT_ROOT.'/core/tpl/extrafields_list_search_sql.tpl.php';
@@ -349,6 +376,14 @@ foreach ($search as $key => $val)
 	else $param .= '&search_'.$key.'='.urlencode($search[$key]);
 }
 if ($optioncss != '')     $param .= '&optioncss='.urlencode($optioncss);
+
+if ($search_date_cloture_startday) $param .= '&search_date_cloture_startday='.urlencode($search_date_cloture_startday);
+if ($search_date_cloture_startmonth) $param .= '&search_date_cloture_startmonth='.urlencode($search_date_cloture_startmonth);
+if ($search_date_cloture_startyear) $param .= '&search_date_cloture_startyear='.urlencode($search_date_cloture_startyear);
+if ($search_date_cloture_endday) $param .= '&search_date_cloture_endday='.urlencode($search_date_cloture_endday);
+if ($search_date_cloture_endmonth) $param .= '&search_date_cloture_endmonth='.urlencode($search_date_cloture_endmonth);
+if ($search_date_cloture_endyear) $param .= '&search_date_cloture_endyear='.urlencode($search_date_cloture_endyear);
+
 // Add $param from extra fields
 include DOL_DOCUMENT_ROOT.'/core/tpl/extrafields_list_search_param.tpl.php';
 
@@ -433,6 +468,16 @@ foreach ($object->fields as $key => $val)
 			print $object->showInputField($val, $key, $search[$key], '', '', 'search_', 'maxwidth150', 1);
 		}
 		elseif (!preg_match('/^(date|timestamp)/', $val['type'])) print '<input type="text" class="flat maxwidth75" name="search_'.$key.'" value="'.dol_escape_htmltag($search[$key]).'">';
+		elseif (preg_match('/^(date|timestamp)/', $val['type'])) {
+			print '<div class="nowrap">';
+			print $langs->trans('From').' ';
+			print $form->selectDate($search_date_cloture_start, 'search_date_cloture_start', 0, 0, 1);
+			print '</div>';
+			print '<div class="nowrap">';
+			print $langs->trans('to').' ';
+			print $form->selectDate($search_date_cloture_end, 'search_date_cloture_end', 0, 0, 1);
+			print '</div>';
+		}
 		print '</td>';
 	}
 }

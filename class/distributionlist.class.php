@@ -255,6 +255,7 @@ class DistributionList extends CommonObject
 		unset($object->id);
 		unset($object->fk_user_creat);
 		unset($object->import_key);
+		unset($object->date_cloture);
 
 
 		// Clear fields
