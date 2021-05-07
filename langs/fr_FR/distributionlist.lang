@@ -32,6 +32,7 @@ DistributionListUnvalidate=Repasser liste de diffusion au statut brouillon
 AddContactToDistributionList=Ajout de contacts à la liste
 DistributionListAddContacts=Ajouter les contacts sélectionnés à la liste de diffusion
 DistributionListNbAddedContacts=%s nouveau(x) contact(s) ajouté(s) à la liste de diffusion
+DistributionListNoAddedContacts=Aucun nouveau contact ajouté à la liste
 DistributionListDeleteContacts=Supprimer les contacts sélectionnés de la liste de diffusion
 DistributionListNbDeletedContacts=%s contact(s) supprimé(s) de la liste de diffusion
 ListOfContactsAddressesDistributionList=Liste des contacts/adresses présents dans la liste de diffusion

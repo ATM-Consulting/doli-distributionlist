@@ -65,7 +65,7 @@ dol_include_once('/distributionlist/class/distributionlistsocpeople.class.php');
 dol_include_once('/distributionlist/lib/distributionlist_distributionlist.lib.php');
 
 // Load translation files required by the page
-$langs->loadLangs(array("distributionlist@distributionlist", "other", "mails"));
+$langs->loadLangs(array("distributionlist@distributionlist", "other", "mails", "products"));
 
 // Get parameters
 $id = GETPOST('id', 'int');
@@ -625,7 +625,9 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 			// Modify
 			if ($permissiontoadd)
 			{
-				print '<a class="butAction" href="'.$_SERVER["PHP_SELF"].'?id='.$object->id.'&action=edit">'.$langs->trans("Modify").'</a>'."\n";
+				if($object->status < DistributionList::STATUS_CLOSED) {
+					print '<a class="butAction" href="' . $_SERVER["PHP_SELF"] . '?id=' . $object->id . '&action=edit">' . $langs->trans("Modify") . '</a>' . "\n";
+				}
 			}
 			else
 			{
