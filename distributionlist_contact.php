@@ -44,7 +44,7 @@ dol_include_once('/distributionlist/lib/distributionlist_distributionlist.lib.ph
 require_once DOL_DOCUMENT_ROOT.'/core/class/html.form.class.php';
 
 // Load translation files required by the page
-$langs->loadLangs(array("distributionlist@distributionlist", "companies", "mails"));
+$langs->loadLangs(array("distributionlist@distributionlist", "companies", "mails", "main"));
 
 // Get parameters
 $id = GETPOST('id', 'int');
@@ -116,13 +116,32 @@ if($action === 'add_filter') {
 	$filter->label = $label;
 	$filter->create($user);
 	// Pour éviter de réenregistrer le filtre en cas de réactualisation de la page
-	header('Location: '.$_SERVER['PHP_SELF'].'?id='.$id.'&action=set_filter&filter='.$filter->id);
+	header('Location: '.$_SERVER['PHP_SELF'].'?id='.$id.'&set_filter=1&filter='.$filter->id);
 	exit;
 
-} elseif($action === 'set_filter') {
+} elseif(GETPOSTISSET('delete_filter') && $filter_id > 0) {
+
+	// Create an array for form
+	$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"].'?id='.$object->id.'&filter='.$filter_id, $langs->trans('RemoveFilter'), $langs->trans('ConfirmDeleteDistributionListFilter'), 'confirm_remove_filter', '', 'yes', 1);
+
+	// pour conserver le filtre si l'utilisateur dit finalement non pour la suppression
 	$f = new DistributionListSocpeopleFilter($db);
 	$f->fetch($filter_id);
 	$TParamURL_HTTP_build_query = $f->url_params;
+
+
+} elseif($action === 'confirm_remove_filter' && $confirm === 'yes' && $filter_id > 0) {
+
+	$filter = new DistributionListSocpeopleFilter($db);
+	$filter->fetch($filter_id);
+	$filter->delete($user);
+
+} elseif(GETPOSTISSET('set_filter')) {
+
+	$f = new DistributionListSocpeopleFilter($db);
+	$f->fetch($filter_id);
+	$TParamURL_HTTP_build_query = $f->url_params;
+
 }
 
 // Ajout des contacts à la liste de diffusion
@@ -247,10 +266,10 @@ if ($id > 0 || !empty($ref)) {
 	print '<div class="underbanner clearboth"></div><br />';
 
 	$filter = new DistributionListSocpeopleFilter($db);
-	$TFilters = $filter->fetchAll('', '', 0, 0, array(), $filtermode = 'AND');
+	$TFilters = $filter->fetchAll('', '', 0, 0, array());
 
 	print '<div class="tabsAction">';
-	print '<form name="set_filter" method="POST" action="'.$_SERVER['PHP_SELF'].'?action=set_filter&id='.$id.'">';
+	print '<form name="set_filter" method="POST" action="'.$_SERVER['PHP_SELF'].'?id='.$id.'">';
 
 	if(!empty($TFilters)) {
 
@@ -261,7 +280,8 @@ if ($id > 0 || !empty($ref)) {
 		} else $default_val = $filter_id;
 
 		print Form::selectarray('filter', $TFilterDisplay, $default_val, 1);
-		print '&emsp;<input class="butAction" type="SUBMIT" value="'.$langs->trans('AdvTgtLoadFilter').'"/>';
+		print '&emsp;<input class="butAction" name="set_filter" type="SUBMIT" value="'.$langs->trans('AdvTgtLoadFilter').'"/>';
+		print '<input class="butActionDelete" name="delete_filter" type="SUBMIT" value="'.$langs->trans('RemoveFilter').'"/>';
 
 	}
 
