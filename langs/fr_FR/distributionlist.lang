@@ -28,7 +28,7 @@ ConfirmValidateDistributionList=Êtes-vous sûr(e) de vouloir valider cette list
 ConfirmCloseDistributionList=Êtes-vous sûr(e) de vouloir clôturer cette liste de diffusion ?
 ConfirmDeleteDistributionList=Êtes-vous sûr(e) de vouloir supprimer cette liste de diffusion ?
 DistributionListSaveCurrentFilter=Enregistrer le filtre actuel
-ConfirmDeleteDistributionListFilter=Êtes-vous sûr(e) de vouloir supprimer ce filtre ?
+ConfirmDeleteDistributionListFilter=Êtes-vous sûr(e) de vouloir supprimer le filtre <STRONG>%s</STRONG> ?
 ConfirmUnvalidateDistributionList=Êtes-vous sûr(e) de vouloir repasser la liste de diffusion <STRONG>%s</STRONG> au statut brouillon ?
 DistributionListUnvalidate=Repasser liste de diffusion au statut brouillon
 AddContactToDistributionList=Ajout de contacts à la liste
@@ -41,7 +41,9 @@ ListOfContactsAddressesDistributionList=Liste des contacts/adresses présents da
 DistributionListNbContactsInList=Nombre de contacts dans la liste
 DistributionListUserWhoAdd=Ajouté à la liste par
 ConfirmDeleteAllContactsDistributionList=Etes vous sûr(e) de vouloir supprimer tous les contacts présents dans cette liste de diffusion ?
-
+DistributionListDeleteFilterSuccess=Le filtre %s a été supprimé
+DistributionListNeedToSelectFilterForDeletion=Vous devez sélectionner le filtre à supprimer
+DistributionListNeedToSelectFilterForSelection=Vous devez sélectionner le filtre à appliquer
 
 # Module label 'ModuleDistributionListName'
 ModuleDistributionListName = Listes de diffusion

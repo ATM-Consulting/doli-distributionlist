@@ -57,6 +57,8 @@ $backtopage = GETPOST('backtopage', 'alpha');
 $label = GETPOST('label', 'alpha');
 $contacts = GETPOST('toselect');
 $confirm = GETPOST('confirm', 'alpha');
+$msg_to_display = GETPOST('msg_to_display', 'alpha');
+$style_msg_to_display = GETPOST('style_msg_to_display', 'alpha');
 
 // Initialize technical objects
 $object = new DistributionList($db);
@@ -92,9 +94,18 @@ if($object->status > 1 || empty($permissiontoadd)) {
 	exit;
 }
 
-// Suppression de la liste des contacts sélectionnés si existante pour ne pas remplir inutilement l'url lors de l'appel àa la liste standard des contacts (sinon bug)
+
 $TParamURL = $_REQUEST;
+
+// Suppression de la liste des contacts sélectionnés si existante pour ne pas remplir inutilement l'url lors de l'appel à la liste standard des contacts (sinon bug)
 unset($TParamURL['toselect']);
+
+// Pour l'enregistrement du filtre, on retire l'information de la page car au moment de l'application du filtre c'est bizarre de tomber sur une page > à la première
+if($action === 'confirm_add_filter' && $confirm === 'yes') {
+	unset($TParamURL['page']);
+	unset($TParamURL['limit']);
+}
+
 $TParamURL_HTTP_build_query = http_build_query($TParamURL);
 
 if($action === 'add_filter') {
@@ -119,15 +130,19 @@ if($action === 'add_filter') {
 	header('Location: '.$_SERVER['PHP_SELF'].'?id='.$id.'&set_filter=1&filter='.$filter->id);
 	exit;
 
-} elseif(GETPOSTISSET('delete_filter') && $filter_id > 0) {
+} elseif(GETPOSTISSET('delete_filter')) {
 
-	// Create an array for form
-	$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"].'?id='.$object->id.'&filter='.$filter_id, $langs->trans('RemoveFilter'), $langs->trans('ConfirmDeleteDistributionListFilter'), 'confirm_remove_filter', '', 'yes', 1);
 
-	// pour conserver le filtre si l'utilisateur dit finalement non pour la suppression
-	$f = new DistributionListSocpeopleFilter($db);
-	$f->fetch($filter_id);
-	$TParamURL_HTTP_build_query = $f->url_params;
+	if($filter_id > 0) {
+		// pour conserver le filtre si l'utilisateur dit finalement non pour la suppression
+		$f = new DistributionListSocpeopleFilter($db);
+		$f->fetch($filter_id);
+
+	        // Create an array for form
+	        $formconfirm = $form->formconfirm($_SERVER["PHP_SELF"].'?id='.$object->id.'&filter='.$filter_id, $langs->trans('RemoveFilter'), $langs->trans('ConfirmDeleteDistributionListFilter', $f->label), 'confirm_remove_filter', '', 'yes', 1);
+
+		$TParamURL_HTTP_build_query = $f->url_params;
+	} else setEventMessage($langs->trans('DistributionListNeedToSelectFilterForDeletion'), 'warnings');
 
 
 } elseif($action === 'confirm_remove_filter' && $confirm === 'yes' && $filter_id > 0) {
@@ -136,11 +151,17 @@ if($action === 'add_filter') {
 	$filter->fetch($filter_id);
 	$filter->delete($user);
 
+        header('Location: '.$_SERVER['PHP_SELF'].'?id='.$id.'&msg_to_display=DistributionListDeleteFilterSuccess');
+        exit;
+
 } elseif(GETPOSTISSET('set_filter')) {
 
-	$f = new DistributionListSocpeopleFilter($db);
-	$f->fetch($filter_id);
-	$TParamURL_HTTP_build_query = $f->url_params;
+	if($filter_id > 0) {
+		$f = new DistributionListSocpeopleFilter($db);
+		$f->fetch($filter_id);
+		$TParamURL_HTTP_build_query = $f->url_params;
+
+	} else setEventMessage($langs->trans('DistributionListNeedToSelectFilterForSelection'), 'warnings');
 
 }
 
@@ -164,6 +185,9 @@ if($massaction === 'distributionlist_add_contacts') {
 /*
  * View
  */
+
+if(!empty($msg_to_display)) setEventMessage($langs->trans($msg_to_display, $style_msg_to_display));
+
 
 $help_url = '';
 
@@ -287,15 +311,15 @@ if ($id > 0 || !empty($ref)) {
 
 	// Le preg_grep('/^search_/', array_keys($_REQUEST)) set à vérifier si le formulaire de recherche a été soumis
 	// Si j'utilise un !empty(GETPOST('button_search') c'est pas bon car l'input n'est pas transmis en cas d'appui sur la touche "Entrée"
-	if (count(preg_grep('/^search_/', array_keys($_REQUEST))) > 0
-		&& empty(GETPOST('button_removefilter', 'alpha'))
-		&& empty(GETPOST('button_removefilter.x', 'alpha'))
-		&& empty(GETPOST('button_removefilter_x', 'alpha'))
-		&& $action !== 'set_filter')	{ // All tests are required to be compatible with all browsers
+//	if (count(preg_grep('/^search_/', array_keys($_REQUEST))) > 0
+//		&& empty(GETPOST('button_removefilter', 'alpha'))
+//		&& empty(GETPOST('button_removefilter.x', 'alpha'))
+//		&& empty(GETPOST('button_removefilter_x', 'alpha'))
+//		&& $action !== 'set_filter')	{ // All tests are required to be compatible with all browsers
 
 		print '<a class="butAction" href="'.$_SERVER['PHP_SELF'].'?action=add_filter&'.$TParamURL_HTTP_build_query.'">'.$langs->trans('DistributionListSaveCurrentFilter').'</a>';
 
-	}
+//	}
 
 	print '</form>';
 	print '</div>';
