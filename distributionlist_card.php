@@ -290,6 +290,12 @@ if($action !== 'create' && $action !== 'edit') {
 					}
 				?>
 
+				<?php
+
+				$reshook = $hookmanager->executeHooks('printMoreAfterAjax', $parameters, $object, $action);
+
+				?>
+
 			});
 
 		});

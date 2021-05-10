@@ -64,7 +64,7 @@ $style_msg_to_display = GETPOST('style_msg_to_display', 'alpha');
 $object = new DistributionList($db);
 $extrafields = new ExtraFields($db);
 $diroutputmassaction = $conf->distributionlist->dir_output.'/temp/massgeneration/'.$user->id;
-$hookmanager->initHooks(array('distributionlistnote', 'globalcard')); // Note that conf->hooks_modules contains array
+$hookmanager->initHooks(array('distributionlistcontact', 'globalcard')); // Note that conf->hooks_modules contains array
 // Fetch optionals attributes and labels
 $extrafields->fetch_name_optionals_label($object->table_element);
 
@@ -103,6 +103,7 @@ unset($TParamURL['toselect']);
 // Pour l'enregistrement du filtre, on retire l'information de la page car au moment de l'application du filtre c'est bizarre de tomber sur une page > à la première
 if($action === 'confirm_add_filter' && $confirm === 'yes') {
 	unset($TParamURL['page']);
+	unset($TParamURL['pageplusone']);
 	unset($TParamURL['limit']);
 }
 
@@ -220,6 +221,12 @@ llxHeader('', $langs->trans('DistributionList'), $help_url);
 
 				// On affiche la liste des contacts
 				$("#inclusion").append(form_contacts);
+
+				<?php
+
+					$reshook = $hookmanager->executeHooks('printMoreAfterAjax', $parameters, $object, $action);
+
+				?>
 
 			});
 		});

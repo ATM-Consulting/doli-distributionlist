@@ -66,8 +66,8 @@ class ActionsDistributionlist {
 					foreach ($TRes as $obj) {
 						$TContacts[] = $obj->fk_socpeople;
 					}
-					$hookmanager->resPrint = ' AND p.rowid IN ('.implode(', ', $TContacts).')';
-				} else $hookmanager->resPrint = ' AND p.rowid = 0 ';
+					$this->resprints = ' AND p.rowid IN ('.implode(', ', $TContacts).')';
+				} else $this->resprints = ' AND p.rowid = 0 ';
 			}
 		}
 
