@@ -82,6 +82,9 @@ $permissiontoadd = $user->rights->distributionlist->distributionlist->write; // 
 
 $form = new Form($db);
 
+// Retrait des droits network car ici il n'y pas lieu d'effectuer ce type d'action
+unset($user->rights->network);
+
 /*
  * Actions
  */
