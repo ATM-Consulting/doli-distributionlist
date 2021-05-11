@@ -126,7 +126,7 @@ $upload_dir = $conf->distributionlist->multidir_output[isset($object->entity) ? 
  */
 
 // Retrait des droits network car ici il n'y pas lieu d'effectuer ce type d'action
-//unset($user->rights->network);
+unset($user->rights->network);
 
 $parameters = array();
 $reshook = $hookmanager->executeHooks('doActions', $parameters, $object, $action); // Note that $action and $object may have been modified by some hooks
@@ -256,13 +256,13 @@ if($action !== 'create' && $action !== 'edit') {
 				var form_contacts = $(data).find('div.fiche form[name="formfilter"]');
 				form_contacts.find('table.table-fiche-title a').each(function() {
 					$(this).attr('href', $(this).attr('href').replace("<?php print dol_buildpath('/contact/list.php', 1); ?>", "<?php print dol_buildpath('/distributionlist/distributionlist_card.php', 1); ?>"));
-					$(this).attr('href', $(this).attr('href') + '&id=' + <?php print $id; ?>);
+					$(this).attr('href', $(this).attr('href') + '&id=' + <?php print $id; $hookmanager->executeHooks('addMoreURLParams', $parameters, $object, $action); ?>);
 				});
 
 				// On remplace les liens de tri pour rester sur la liste de diffusion en cas de tri sur une colonne
 				form_contacts.find('table.liste tr.liste_titre a').each(function() {
 					$(this).attr('href', $(this).attr('href').replace("<?php print dol_buildpath('/contact/list.php', 1); ?>", "<?php print dol_buildpath('/distributionlist/distributionlist_card.php', 1); ?>"));
-					$(this).attr('href', $(this).attr('href') + '&id=' + <?php print $id; ?>);
+					$(this).attr('href', $(this).attr('href') + '&id=' + <?php print $id; $hookmanager->executeHooks('addMoreURLParams', $parameters, $object, $action); ?>);
 				});
 
 				// Formulaire

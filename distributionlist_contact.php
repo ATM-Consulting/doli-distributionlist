@@ -206,13 +206,13 @@ llxHeader('', $langs->trans('DistributionList'), $help_url);
 				var form_contacts = $(data).find('div.fiche form[name="formfilter"]');
 				form_contacts.find('table.table-fiche-title a').each(function() {
 					$(this).attr('href', $(this).attr('href').replace("<?php print dol_buildpath('/contact/list.php', 1); ?>", "<?php print dol_buildpath('/distributionlist/distributionlist_contact.php', 1); ?>"));
-					$(this).attr('href', $(this).attr('href') + '&id=' + <?php print $id; ?> + '&filter=' + <?php if(!empty($filter_id)) print $filter_id; else print 0; ?>);
+					$(this).attr('href', $(this).attr('href') + '&id=' + <?php print $id; ?> + '&filter=' + <?php if(!empty($filter_id)) print $filter_id; else print 0; $hookmanager->executeHooks('addMoreURLParams', $parameters, $object, $action); ?>);
 				});
 
 				// On remplace les liens de tri pour rester sur la liste de diffusion en cas de tri sur une colonne
 				form_contacts.find('table.liste tr.liste_titre a').each(function() {
 					$(this).attr('href', $(this).attr('href').replace("<?php print dol_buildpath('/contact/list.php', 1); ?>", "<?php print dol_buildpath('/distributionlist/distributionlist_contact.php', 1); ?>"));
-					$(this).attr('href', $(this).attr('href') + '&id=' + <?php print $id; ?> + '&filter=' + <?php if(!empty($filter_id)) print $filter_id; else print 0; ?>);
+					$(this).attr('href', $(this).attr('href') + '&id=' + <?php print $id; ?> + '&filter=' + <?php if(!empty($filter_id)) print $filter_id; else print 0; $hookmanager->executeHooks('addMoreURLParams', $parameters, $object, $action); ?>);
 				});
 
 				// Formulaire
