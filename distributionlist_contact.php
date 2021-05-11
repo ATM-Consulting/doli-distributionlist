@@ -183,6 +183,8 @@ if($massaction === 'distributionlist_add_contacts') {
 
 }
 
+$hookmanager->executeHooks('doActions', $parameters, $object, $action);
+
 /*
  * View
  */
