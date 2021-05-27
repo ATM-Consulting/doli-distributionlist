@@ -18,6 +18,7 @@
 #
 
 DistributionList=Liste de diffusion
+EmailFromDistributionList=E-mails à partir d\'une liste de diffusion
 DistributionListNew=Nouvelle liste de diffusion
 DistributionListList=Voir toutes les listes
 DistributionListAllList=Listes de diffusion
