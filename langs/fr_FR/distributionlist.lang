@@ -62,7 +62,8 @@ DistributionListSetupPage = Page de configuration du module listes de diffusion
 # Permissions
 #
 DistributionListPermRead=Voir les listes de diffusion
-DistributionListPermCreateUpdate=Créer/modifier des listes de diffusion
+DistributionListPermCreate=Créer des listes de diffusion
+DistributionListPermUpdate=Modifier des listes de diffusion
 DistributionListPermDelete=Supprimer des listes de diffusion
 
 #
