@@ -106,10 +106,10 @@ include DOL_DOCUMENT_ROOT.'/core/actions_fetchobject.inc.php'; // Must be includ
 
 
 $permissiontoread = $user->rights->distributionlist->distributionlist->read;
-$permissiontoadd = $user->rights->distributionlist->distributionlist->write; // Used by the include of actions_addupdatedelete.inc.php and actions_lineupdown.inc.php
+$permissiontoadd = $user->rights->distributionlist->distributionlist->create; // Used by the include of actions_addupdatedelete.inc.php and actions_lineupdown.inc.php
 $permissiontodelete = $user->rights->distributionlist->distributionlist->delete || ($permissiontoadd && isset($object->status) && $object->status == $object::STATUS_DRAFT && empty($object->nb_contacts));
-$permissionnote = $user->rights->distributionlist->distributionlist->write; // Used by the include of actions_setnotes.inc.php
-$permissiondellink = $user->rights->distributionlist->distributionlist->write; // Used by the include of actions_dellink.inc.php
+$permissionnote = $user->rights->distributionlist->distributionlist->create; // Used by the include of actions_setnotes.inc.php
+$permissiondellink = $user->rights->distributionlist->distributionlist->update; // Used by the include of actions_dellink.inc.php
 $upload_dir = $conf->distributionlist->multidir_output[isset($object->entity) ? $object->entity : 1];
 
 // Security check - Protection if external user

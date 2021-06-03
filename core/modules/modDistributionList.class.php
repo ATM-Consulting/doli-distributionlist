@@ -64,7 +64,7 @@ class modDistributionList extends DolibarrModules
 		$this->editor_name = 'Editor name';
 		$this->editor_url = 'https://www.example.com';
 		// Possible values for version are: 'development', 'experimental', 'dolibarr', 'dolibarr_deprecated' or a version string like 'x.y.z'
-		$this->version = '1.0';
+		$this->version = '1.1.0';
 		// Url to the file with your last numberversion of this module
 		//$this->url_last_version = 'http://www.example.com/versionmodule.txt';
 
@@ -248,9 +248,14 @@ class modDistributionList extends DolibarrModules
 		$this->rights[$r][5] = 'read'; // In php code, permission will be checked by test if ($user->rights->distributionlist->level1->level2)
 		$r++;
 		$this->rights[$r][0] = $this->numero + $r; // Permission id (must not be already used)
-		$this->rights[$r][1] = 'DistributionListPermCreateUpdate'; // Permission label
+		$this->rights[$r][1] = 'DistributionListPermCreate'; // Permission label
 		$this->rights[$r][4] = 'distributionlist'; // In php code, permission will be checked by test if ($user->rights->distributionlist->level1->level2)
-		$this->rights[$r][5] = 'write'; // In php code, permission will be checked by test if ($user->rights->distributionlist->level1->level2)
+		$this->rights[$r][5] = 'create'; // In php code, permission will be checked by test if ($user->rights->distributionlist->level1->level2)
+		$r++;
+		$this->rights[$r][0] = $this->numero . $r; // Permission id (must not be already used)
+		$this->rights[$r][1] = 'DistributionListPermUpdate'; // Permission label
+		$this->rights[$r][4] = 'distributionlist'; // In php code, permission will be checked by test if ($user->rights->distributionlist->level1->level2)
+		$this->rights[$r][5] = 'update'; // In php code, permission will be checked by test if ($user->rights->distributionlist->level1->level2)
 		$r++;
 		$this->rights[$r][0] = $this->numero + $r; // Permission id (must not be already used)
 		$this->rights[$r][1] = 'DistributionListPermDelete'; // Permission label
@@ -359,7 +364,7 @@ class modDistributionList extends DolibarrModules
 			// Define condition to show or hide menu entry. Use '$conf->distributionlist->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
 			'enabled'=>'$conf->distributionlist->enabled',
 			// Use 'perms'=>'$user->rights->distributionlist->level1->level2' if you want your menu with a permission rules
-			'perms'=>'$user->rights->distributionlist->distributionlist->write',
+			'perms'=>'$user->rights->distributionlist->distributionlist->create',
 			'target'=>'',
 			// 0=Menu for internal users, 1=external users, 2=both
 			'user'=>2

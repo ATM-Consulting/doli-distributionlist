@@ -67,8 +67,8 @@ $extrafields->fetch_name_optionals_label($object->table_element);
 include DOL_DOCUMENT_ROOT.'/core/actions_fetchobject.inc.php'; // Must be include, not include_once  // Must be include, not include_once. Include fetch and fetch_thirdparty but not fetch_optionals
 if ($id > 0 || !empty($ref)) $upload_dir = $conf->distributionlist->multidir_output[$object->entity]."/".$object->id;
 
-$permissionnote = $user->rights->distributionlist->distributionlist->write; // Used by the include of actions_setnotes.inc.php
-$permissiontoadd = $user->rights->distributionlist->distributionlist->write; // Used by the include of actions_addupdatedelete.inc.php
+$permissionnote = $user->rights->distributionlist->distributionlist->create; // Used by the include of actions_setnotes.inc.php
+$permissiontoadd = $user->rights->distributionlist->distributionlist->create; // Used by the include of actions_addupdatedelete.inc.php
 
 
 

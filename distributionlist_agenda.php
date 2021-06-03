@@ -93,7 +93,7 @@ if ($id > 0 || !empty($ref)) $upload_dir = $conf->distributionlist->multidir_out
 //if ($user->socid > 0) $socid = $user->socid;
 //$result = restrictedArea($user, 'distributionlist', $object->id);
 
-$permissiontoadd = $user->rights->distributionlist->distributionlist->write; // Used by the include of actions_addupdatedelete.inc.php
+$permissiontoadd = $user->rights->distributionlist->distributionlist->create; // Used by the include of actions_addupdatedelete.inc.php
 
 
 /*

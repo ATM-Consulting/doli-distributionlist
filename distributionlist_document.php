@@ -85,7 +85,7 @@ if ($id > 0 || !empty($ref)) $upload_dir = $conf->distributionlist->multidir_out
 //if ($user->socid > 0) $socid = $user->socid;
 //$result = restrictedArea($user, 'distributionlist', $object->id);
 
-$permissiontoadd = $user->rights->distributionlist->distributionlist->write; // Used by the include of actions_addupdatedelete.inc.php
+$permissiontoadd = $user->rights->distributionlist->distributionlist->create; // Used by the include of actions_addupdatedelete.inc.php
 
 
 
@@ -189,10 +189,10 @@ if ($object->id)
 	dol_fiche_end();
 
 	$modulepart = 'distributionlist';
-	//$permission = $user->rights->distributionlist->distributionlist->write;
-	$permission = 1;
-	//$permtoedit = $user->rights->distributionlist->distributionlist->write;
-	$permtoedit = 1;
+	$permission = $user->rights->distributionlist->distributionlist->create;
+//	$permission = 1;
+	$permtoedit = $user->rights->distributionlist->distributionlist->create;
+//	$permtoedit = 1;
 	$param = '&id='.$object->id;
 
 	//$relativepathwithnofile='distributionlist/' . dol_sanitizeFileName($object->id).'/';

@@ -41,7 +41,7 @@ function distributionlistPrepareHead($object)
 	$head[$h][2] = 'card';
 	$h++;
 
-	if($object->status < DistributionList::STATUS_CLOSED && $user->rights->distributionlist->distributionlist->write) {
+	if($object->status < DistributionList::STATUS_CLOSED && $user->rights->distributionlist->distributionlist->update) {
 		$head[$h][0] = dol_buildpath("/distributionlist/distributionlist_contact.php", 1) . '?id=' . $object->id;
 		$head[$h][1] = $langs->trans("AddContactToDistributionList");
 		$head[$h][2] = 'contact';
