@@ -252,7 +252,7 @@ class modDistributionList extends DolibarrModules
 		$this->rights[$r][4] = 'distributionlist'; // In php code, permission will be checked by test if ($user->rights->distributionlist->level1->level2)
 		$this->rights[$r][5] = 'create'; // In php code, permission will be checked by test if ($user->rights->distributionlist->level1->level2)
 		$r++;
-		$this->rights[$r][0] = $this->numero + $r; // Permission id (must not be already used)
+		$this->rights[$r][0] = $this->numero . $r; // Permission id (must not be already used)
 		$this->rights[$r][1] = 'DistributionListPermUpdate'; // Permission label
 		$this->rights[$r][4] = 'distributionlist'; // In php code, permission will be checked by test if ($user->rights->distributionlist->level1->level2)
 		$this->rights[$r][5] = 'update'; // In php code, permission will be checked by test if ($user->rights->distributionlist->level1->level2)
