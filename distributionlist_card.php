@@ -400,17 +400,25 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	if ($action == 'validate') {
 		$error = 0;
 
-		// We verify whether the object is provisionally numbering
-		$ref = substr($object->ref, 1, 4);
-		if ($ref == 'PROV') {
-			$numref = $object->getNextNumRef($soc);
-			if (empty($numref)) {
-				$error++;
-				setEventMessages($object->error, $object->errors, 'errors');
+		if ($object->nb_contacts > 0){
+			// We verify whether the object is provisionally numbering
+			$ref = substr($object->ref, 1, 4);
+			if ($ref == 'PROV') {
+				$numref = $object->getNextNumRef($soc);
+				if (empty($numref)) {
+					$error++;
+					setEventMessages($object->error, $object->errors, 'errors');
+				}
+			} else {
+				$numref = $object->ref;
 			}
 		} else {
-			$numref = $object->ref;
+			$error++;
+			setEventMessages($langs->transnoentities("NoContactInDistribListError"), null, 'warnings');
 		}
+
+
+
 
 		$text = $langs->trans('ConfirmValidateDistributionList', $numref);
 		if (!empty($conf->notification->enabled)) {
