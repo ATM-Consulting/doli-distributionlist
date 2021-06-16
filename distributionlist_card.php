@@ -452,6 +452,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	// Close confirmation
 	if ($action == 'confirm_close' && $confirm == 'yes' && $permissiontoadd) {
 		$object->date_cloture = dol_now();
+		$object->update($user);
 	}
 
 	if ($action == 'reopen') {
