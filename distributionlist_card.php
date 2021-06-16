@@ -400,17 +400,25 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	if ($action == 'validate') {
 		$error = 0;
 
-		// We verify whether the object is provisionally numbering
-		$ref = substr($object->ref, 1, 4);
-		if ($ref == 'PROV') {
-			$numref = $object->getNextNumRef($soc);
-			if (empty($numref)) {
-				$error++;
-				setEventMessages($object->error, $object->errors, 'errors');
+		if ($object->nb_contacts > 0){
+			// We verify whether the object is provisionally numbering
+			$ref = substr($object->ref, 1, 4);
+			if ($ref == 'PROV') {
+				$numref = $object->getNextNumRef($soc);
+				if (empty($numref)) {
+					$error++;
+					setEventMessages($object->error, $object->errors, 'errors');
+				}
+			} else {
+				$numref = $object->ref;
 			}
 		} else {
-			$numref = $object->ref;
+			$error++;
+			setEventMessages($langs->transnoentities("NoContactInDistribListError"), null, 'warnings');
 		}
+
+
+
 
 		$text = $langs->trans('ConfirmValidateDistributionList', $numref);
 		if (!empty($conf->notification->enabled)) {
@@ -423,7 +431,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		if (!$error)
 			$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"].'?id='.$object->id, $langs->trans('DistributionListValidate'), $text, 'confirm_validate', '', 0, 1);
 	}
-	// Clone confirmation
+	// Clone action
 	if ($action == 'clone') {
 		// Create an array for form
 		$formquestion = array();
@@ -436,9 +444,15 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 			// 'text' => $langs->trans("ConfirmClone"),
 			// array('type' => 'checkbox', 'name' => 'clone_content', 'label' => $langs->trans("CloneMainAttributes"), 'value' => 1),
 			// array('type' => 'checkbox', 'name' => 'update_prices', 'label' => $langs->trans("PuttingPricesUpToDate"), 'value' => 1),
-			array('type' => 'date', 'name' => 'date_cloture', 'label' => $langs->trans('DateClosing'), 'value'=>dol_now())
+			// array('type' => 'date', 'name' => 'date_cloture', 'label' => $langs->trans('DateClosing'), 'value'=>dol_now())
 		);
 		$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"].'?id='.$object->id, $langs->trans('ToClose'), $langs->trans('ConfirmCloseDistributionList', $object->ref), 'confirm_close', $formquestion, 'yes', 1);
+	}
+
+	// Close confirmation
+	if ($action == 'confirm_close' && $confirm == 'yes' && $permissiontoadd) {
+		$object->date_cloture = dol_now();
+		$object->update($user);
 	}
 
 	if ($action == 'reopen') {
