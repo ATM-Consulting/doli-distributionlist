@@ -11,9 +11,9 @@
  */
 
 /**
- *	\file       htdocs/core/modules/mailings/thirdparties.modules.php
+ *	\file       htdocs/core/modules/mailings/distributionlist.modules.php
  *	\ingroup    mailing
- *	\brief      Example file to provide a list of recipients for mailing module
+ *	\brief      Example file to provide a list of distribution list for mailing module
  */
 
 include_once DOL_DOCUMENT_ROOT.'/core/modules/mailings/modules_mailings.php';
@@ -22,7 +22,7 @@ dol_include_once('/distributionlist/class/distributionlist.class.php');
 
 
 /**
- *	Class to manage a list of personalised recipients for mailing feature
+ *	Class to manage a list of distribution list for mailing feature
  */
 class mailing_distributionlist extends MailingTargets
 {
