@@ -88,57 +88,31 @@ class mailing_distributionlist extends MailingTargets
 			$sql .= " AND ds.fk_distributionlist =".$_POST["filter_distributionlist"];
 			$sql .= " group by email";
 			$res = $this->db->query($sql);
-			if ($res) $num = $this->db->num_rows($res);
+			if ($res) {
+				$num = $this->db->num_rows($res);
 
-			$sql = "INSERT INTO llx_mailing_cibles (fk_mailing, fk_contact, lastname, firstname, email, other, source_url, source_id, source_type)";
-			$sql .= " SELECT DISTINCT ".$mailing_id.", sp.rowid AS fk_contact, sp.lastname AS lastname, sp.firstname AS firstname, sp.email AS email, '',";
-			$sql .= " CONCAT('<a href=\"".DOL_MAIN_URL_ROOT."/contact/card.php?id=',sp.rowid,'\"><span class=\"fas fa-address-book paddingright classfortooltip\" style=\" color: #37a;\"></span>',sp.firstname, ' ', sp.lastname,'</a>') as source_url,";
-			$sql .= " d.rowid AS source_id, 'distributionlist' as source_type";
-			$sql .= " FROM ".MAIN_DB_PREFIX."distributionlist_distributionlistsocpeople AS ds";
-			$sql .= " JOIN ".MAIN_DB_PREFIX."distributionlist_distributionlist AS d ON d.rowid = ds.fk_distributionlist";
-			$sql .= " JOIN ".MAIN_DB_PREFIX."socpeople AS sp ON ds.fk_socpeople = sp.rowid";
-			$sql .= " WHERE sp.email <> ''";
-			$sql .= " AND d.entity IN(".getEntity('distributionlist').")";
-			$sql .= " AND sp.email NOT IN(SELECT email FROM ".MAIN_DB_PREFIX."mailing_cibles WHERE fk_mailing=".$mailing_id.")";
-			$sql .= " AND ds.fk_distributionlist=".$_POST["filter_distributionlist"];
-			$sql .= " group by email";
+				$sql = "INSERT INTO llx_mailing_cibles (fk_mailing, fk_contact, lastname, firstname, email, other, source_url, source_id, source_type)";
+				$sql .= " SELECT DISTINCT ".$mailing_id.", sp.rowid AS fk_contact, sp.lastname AS lastname, sp.firstname AS firstname, sp.email AS email, '',";
+				$sql .= " CONCAT('<a href=\"".DOL_MAIN_URL_ROOT."/contact/card.php?id=',sp.rowid,'\"><span class=\"fas fa-address-book paddingright classfortooltip\" style=\" color: #37a;\"></span>',sp.firstname, ' ', sp.lastname,'</a>') as source_url,";
+				$sql .= " d.rowid AS source_id, 'distributionlist' as source_type";
+				$sql .= " FROM ".MAIN_DB_PREFIX."distributionlist_distributionlistsocpeople AS ds";
+				$sql .= " JOIN ".MAIN_DB_PREFIX."distributionlist_distributionlist AS d ON d.rowid = ds.fk_distributionlist";
+				$sql .= " JOIN ".MAIN_DB_PREFIX."socpeople AS sp ON ds.fk_socpeople = sp.rowid";
+				$sql .= " WHERE sp.email <> ''";
+				$sql .= " AND d.entity IN(".getEntity('distributionlist').")";
+				$sql .= " AND sp.email NOT IN(SELECT email FROM ".MAIN_DB_PREFIX."mailing_cibles WHERE fk_mailing=".$mailing_id.")";
+				$sql .= " AND ds.fk_distributionlist=".$_POST["filter_distributionlist"];
+				$sql .= " group by email";
+
+				$result = $this->db->query($sql);
+			}
 		}
 
 		// Stock recipients emails into targets table
-		$result = $this->db->query($sql);
 		if ($result)
 		{
 			$this->db->commit();
 			return $num;
-			/*$num = $this->db->num_rows($result);
-			$i = 0;
-			$j = 0;
-
-			dol_syslog(get_class($this)."::add_to_target mailing ".$num." targets found");
-
-			$old = '';
-			while ($i < $num)
-			{
-				$obj = $this->db->fetch_object($result);
-				if ($old <> $obj->email)
-				{
-					$otherTxt .= $addDescription;
-					$cibles[$j] = array(
-						'email' => $obj->email,
-						'fk_contact' => $obj->fk_contact,
-						'lastname' => $obj->name, // For a thirdparty, we must use name
-						'firstname' => $obj->firstname, // For a thirdparty, lastname is ''
-						'other' => '',
-						'source_url' => $this->url($obj->fk_contact, $obj->name, $obj->firstname),
-						'source_id' => $obj->id,
-						'source_type' => 'distributionlist'
-					);
-					$old = $obj->email;
-					$j++;
-				}
-
-				$i++;
-			}*/
 		}
 		else
 		{
