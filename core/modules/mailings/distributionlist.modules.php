@@ -73,6 +73,8 @@ class mailing_distributionlist extends MailingTargets
 		$cibles = array();
 		$this->db->begin();
 		$addDescription = "";
+		$num = 0;
+
 		// Select the third parties from category
 		if (!empty($_POST['filter_distributionlist']))
 		{
@@ -86,7 +88,7 @@ class mailing_distributionlist extends MailingTargets
 			$sql .= " AND ds.fk_distributionlist =".$_POST["filter_distributionlist"];
 			$sql .= " group by email";
 			$res = $this->db->query($sql);
-			$num = $this->db->num_rows($res);
+			if ($res) $num = $this->db->num_rows($res);
 
 			$sql = "INSERT INTO llx_mailing_cibles (fk_mailing, fk_contact, lastname, firstname, email, other, source_url, source_id, source_type)";
 			$sql .= " SELECT DISTINCT ".$mailing_id.", sp.rowid AS fk_contact, sp.lastname AS lastname, sp.firstname AS firstname, sp.email AS email, '',";
