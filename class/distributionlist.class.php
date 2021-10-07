@@ -574,6 +574,293 @@ class DistributionList extends CommonObject
 		return $this->deleteLineCommon($user, $idline, $notrigger);
 	}
 
+    public function getAllContactIds() {
+        global $user, $conf;
+        dol_include_once('/contact/class/contact.class.php');
+        $object = new Contact($this->db);
+        $extrafields = new ExtraFields($this->db);
+
+// Security check
+        $id = GETPOST('id', 'int');
+        $contactid = GETPOST('id', 'int');
+        $ref = ''; // There is no ref for contacts
+        if($user->socid) $socid = $user->socid;
+        $result = restrictedArea($user, 'contact', $contactid, '');
+        $socialnetworks = getArrayOfSocialNetworks();
+
+        $sall = trim((GETPOST('search_all', 'alphanohtml') != '') ? GETPOST('search_all', 'alphanohtml') : GETPOST('sall', 'alphanohtml'));
+        $search_cti = preg_replace('/^0+/', '', preg_replace('/[^0-9]/', '', GETPOST('search_cti', 'alphanohtml'))); // Phone number without any special chars
+        $search_phone = GETPOST("search_phone", 'alpha');
+
+        $search_id = trim(GETPOST("search_id", "int"));
+        $search_firstlast_only = GETPOST("search_firstlast_only", 'alpha');
+        $search_lastname = GETPOST("search_lastname", 'alpha');
+        $search_firstname = GETPOST("search_firstname", 'alpha');
+        $search_societe = GETPOST("search_societe", 'alpha');
+        $search_poste = GETPOST("search_poste", 'alpha');
+        $search_phone_perso = GETPOST("search_phone_perso", 'alpha');
+        $search_phone_pro = GETPOST("search_phone_pro", 'alpha');
+        $search_phone_mobile = GETPOST("search_phone_mobile", 'alpha');
+        $search_fax = GETPOST("search_fax", 'alpha');
+        $search_email = GETPOST("search_email", 'alpha');
+        $search_no_email = GETPOST("search_no_email", 'int');
+        if(! empty($conf->socialnetworks->enabled)) {
+            foreach($socialnetworks as $key => $value) {
+                if($value['active']) {
+                    ${"search_".$key} = GETPOST("search_".$key, 'alpha');
+                }
+            }
+        }
+        $search_priv = GETPOST("search_priv", 'alpha');
+        $search_categ = GETPOST("search_categ", 'int');
+        $search_categ_thirdparty = GETPOST("search_categ_thirdparty", 'int');
+        $search_categ_supplier = GETPOST("search_categ_supplier", 'int');
+        $search_status = GETPOST("search_status", 'int');
+        $search_type = GETPOST('search_type', 'alpha');
+        $search_zip = GETPOST('search_zip', 'alpha');
+        $search_town = GETPOST('search_town', 'alpha');
+        $search_import_key = GETPOST("search_import_key", "alpha");
+        $search_country = GETPOST("search_country", 'intcomma');
+        $search_roles = GETPOST("search_roles", 'array');
+
+        if($search_status == '') $search_status = 1; // always display active customer first
+
+        $optioncss = GETPOST('optioncss', 'alpha');
+
+        $type = GETPOST("type", 'aZ');
+        $view = GETPOST("view", 'alpha');
+
+        $limit = GETPOST('limit', 'int') ? GETPOST('limit', 'int') : $conf->liste_limit;
+        $sortfield = GETPOST('sortfield', 'alpha');
+        $sortorder = GETPOST('sortorder', 'alpha');
+        $page = GETPOSTISSET('pageplusone') ? (GETPOST('pageplusone') - 1) : GETPOST("page", 'int');
+        $userid = GETPOST('userid', 'int');
+        $begin = GETPOST('begin');
+        if(! $sortorder) $sortorder = "ASC";
+        if(! $sortfield) $sortfield = "p.lastname";
+// fetch optionals attributes and labels
+        $extrafields->fetch_name_optionals_label($object->table_element);
+
+        $search_array_options = $extrafields->getOptionalsFromPost($object->table_element, '', 'search_');
+
+// List of fields to search into when doing a "search in all"
+        $fieldstosearchall = array(
+            'p.lastname' => 'Lastname',
+            'p.firstname' => 'Firstname',
+            'p.email' => 'EMail',
+            's.nom' => "ThirdParty",
+            'p.phone' => "Phone",
+            'p.phone_perso' => "PhonePerso",
+            'p.phone_mobile' => "PhoneMobile",
+            'p.fax' => "Fax",
+            'p.note_public' => "NotePublic",
+            'p.note_private' => "NotePrivate",
+        );
+
+// Definition of fields for list
+        $arrayfields = array(
+            'p.rowid' => array('label' => "TechnicalID", 'position' => 1, 'checked' => ($conf->global->MAIN_SHOW_TECHNICAL_ID ? 1 : 0), 'enabled' => ($conf->global->MAIN_SHOW_TECHNICAL_ID ? 1 : 0)),
+            'p.lastname' => array('label' => "Lastname", 'position' => 2, 'checked' => 1),
+            'p.firstname' => array('label' => "Firstname", 'position' => 3, 'checked' => 1),
+            'p.poste' => array('label' => "PostOrFunction", 'position' => 10, 'checked' => 1),
+            'p.town' => array('label' => "Town", 'position' => 20, 'checked' => 0),
+            'p.zip' => array('label' => "Zip", 'position' => 21, 'checked' => 0),
+            'country.code_iso' => array('label' => "Country", 'position' => 22, 'checked' => 0),
+            'p.phone' => array('label' => "Phone", 'position' => 30, 'checked' => 1),
+            'p.phone_perso' => array('label' => "PhonePerso", 'position' => 31, 'checked' => 0),
+            'p.phone_mobile' => array('label' => "PhoneMobile", 'position' => 32, 'checked' => 1),
+            'p.fax' => array('label' => "Fax", 'position' => 33, 'checked' => 0),
+            'p.email' => array('label' => "EMail", 'position' => 40, 'checked' => 1),
+            'p.no_email' => array('label' => "No_Email", 'position' => 41, 'checked' => 0, 'enabled' => (! empty($conf->mailing->enabled))),
+            'p.thirdparty' => array('label' => "ThirdParty", 'position' => 50, 'checked' => 1, 'enabled' => empty($conf->global->SOCIETE_DISABLE_CONTACTS)),
+            'p.priv' => array('label' => "ContactVisibility", 'checked' => 1, 'position' => 200),
+            'p.datec' => array('label' => "DateCreationShort", 'checked' => 0, 'position' => 500),
+            'p.tms' => array('label' => "DateModificationShort", 'checked' => 0, 'position' => 500),
+            'p.statut' => array('label' => "Status", 'checked' => 1, 'position' => 1000),
+            'p.import_key' => array('label' => "ImportId", 'checked' => 0, 'position' => 1100),
+        );
+        if(! empty($conf->socialnetworks->enabled)) {
+            foreach($socialnetworks as $key => $value) {
+                if($value['active']) {
+                    $arrayfields['p.'.$key] = array(
+                        'label' => $value['label'],
+                        'checked' => 0,
+                        'position' => 300
+                    );
+                }
+            }
+        }
+// Extra fields
+        if(is_array($extrafields->attributes[$object->table_element]['label']) && count($extrafields->attributes[$object->table_element]['label']) > 0) {
+            foreach($extrafields->attributes[$object->table_element]['label'] as $key => $val) {
+                if(! empty($extrafields->attributes[$object->table_element]['list'][$key])) $arrayfields["ef.".$key] = array(
+                    'label' => $extrafields->attributes[$object->table_element]['label'][$key],
+                    'checked' => (($extrafields->attributes[$object->table_element]['list'][$key] < 0) ? 0 : 1),
+                    'position' => $extrafields->attributes[$object->table_element]['pos'][$key],
+                    'enabled' => (abs($extrafields->attributes[$object->table_element]['list'][$key]) != 3 && $extrafields->attributes[$object->table_element]['perms'][$key]),
+                    'langfile' => $extrafields->attributes[$object->table_element]['langfile'][$key],
+                );
+            }
+        }
+        $object->fields = dol_sort_array($object->fields, 'position');
+        $arrayfields = dol_sort_array($arrayfields, 'position');
+// Selection of new fields
+        include DOL_DOCUMENT_ROOT.'/core/actions_changeselectedfields.inc.php';
+
+        // Did we click on purge search criteria ?
+        if(GETPOST('button_removefilter_x', 'alpha') || GETPOST('button_removefilter.x', 'alpha') || GETPOST('button_removefilter', 'alpha'))    // All tests are required to be compatible with all browsers
+        {
+            $sall = "";
+            $search_id = '';
+            $search_firstlast_only = "";
+            $search_lastname = "";
+            $search_firstname = "";
+            $search_societe = "";
+            $search_town = "";
+            $search_zip = "";
+            $search_country = "";
+            $search_poste = "";
+            $search_phone = "";
+            $search_phone_perso = "";
+            $search_phone_pro = "";
+            $search_phone_mobile = "";
+            $search_fax = "";
+            $search_email = "";
+            $search_no_email = -1;
+            if(! empty($conf->socialnetworks->enabled)) {
+                foreach($socialnetworks as $key => $value) {
+                    if($value['active']) {
+                        ${"search_".$key} = "";
+                    }
+                }
+            }
+            $search_priv = "";
+            $search_status = -1;
+            $search_categ = '';
+            $search_categ_thirdparty = '';
+            $search_categ_supplier = '';
+            $search_import_key = '';
+            $toselect = '';
+            $search_array_options = array();
+            $search_roles = array();
+        }
+        if($search_priv < 0) $search_priv = '';
+
+        $sql = "SELECT s.rowid as socid, s.nom as name,";
+        $sql .= " p.rowid, p.lastname as lastname, p.statut, p.firstname, p.zip, p.town, p.poste, p.email, p.no_email,";
+        $sql .= " p.socialnetworks, p.photo,";
+        $sql .= " p.phone as phone_pro, p.phone_mobile, p.phone_perso, p.fax, p.fk_pays, p.priv, p.datec as date_creation, p.tms as date_update,";
+        $sql .= " co.label as country, co.code as country_code";
+// Add fields from extrafields
+        if(! empty($extrafields->attributes[$object->table_element]['label'])) {
+            foreach($extrafields->attributes[$object->table_element]['label'] as $key => $val) $sql .= ($extrafields->attributes[$object->table_element]['type'][$key] != 'separate' ? ", ef.".$key.' as options_'.$key : '');
+        }
+// Add fields from hooks
+        $sql .= " FROM ".MAIN_DB_PREFIX."socpeople as p";
+        if(is_array($extrafields->attributes[$object->table_element]['label']) && count($extrafields->attributes[$object->table_element]['label'])) $sql .= " LEFT JOIN ".MAIN_DB_PREFIX.$object->table_element."_extrafields as ef on (p.rowid = ef.fk_object)";
+        $sql .= " LEFT JOIN ".MAIN_DB_PREFIX."c_country as co ON co.rowid = p.fk_pays";
+        $sql .= " LEFT JOIN ".MAIN_DB_PREFIX."societe as s ON s.rowid = p.fk_soc";
+        if(! empty($search_categ)) $sql .= ' LEFT JOIN '.MAIN_DB_PREFIX."categorie_contact as cc ON p.rowid = cc.fk_socpeople"; // We need this table joined to the select in order to filter by categ
+        if(! empty($search_categ_thirdparty)) $sql .= ' LEFT JOIN '.MAIN_DB_PREFIX."categorie_societe as cs ON s.rowid = cs.fk_soc"; // We need this table joined to the select in order to filter by categ
+        if(! empty($search_categ_supplier)) $sql .= ' LEFT JOIN '.MAIN_DB_PREFIX."categorie_fournisseur as cs2 ON s.rowid = cs2.fk_soc"; // We need this table joined to the select in order to filter by categ
+        if(! $user->rights->societe->client->voir && ! $socid) $sql .= " LEFT JOIN ".MAIN_DB_PREFIX."societe_commerciaux as sc ON s.rowid = sc.fk_soc";
+        $sql .= ' WHERE p.entity IN ('.getEntity('socpeople').')';
+        if(! $user->rights->societe->client->voir && ! $socid) //restriction
+        {
+            $sql .= " AND (sc.fk_user = ".$user->id." OR p.fk_soc IS NULL)";
+        }
+        if(! empty($userid))    // propre au commercial
+        {
+            $sql .= " AND p.fk_user_creat=".$this->db->escape($userid);
+        }
+
+// Filter to exclude not owned private contacts
+        if($search_priv != '0' && $search_priv != '1') {
+            $sql .= " AND (p.priv='0' OR (p.priv='1' AND p.fk_user_creat=".$user->id."))";
+        }
+        else {
+            if($search_priv == '0') $sql .= " AND p.priv='0'";
+            if($search_priv == '1') $sql .= " AND (p.priv='1' AND p.fk_user_creat=".$user->id.")";
+        }
+
+        if($search_categ > 0) $sql .= " AND cc.fk_categorie = ".$this->db->escape($search_categ);
+        if($search_categ == -2) $sql .= " AND cc.fk_categorie IS NULL";
+        if($search_categ_thirdparty > 0) $sql .= " AND cs.fk_categorie = ".$this->db->escape($search_categ_thirdparty);
+        if($search_categ_thirdparty == -2) $sql .= " AND cs.fk_categorie IS NULL";
+        if($search_categ_supplier > 0) $sql .= " AND cs2.fk_categorie = ".$this->db->escape($search_categ_supplier);
+        if($search_categ_supplier == -2) $sql .= " AND cs2.fk_categorie IS NULL";
+
+        if($sall) $sql .= natural_search(array_keys($fieldstosearchall), $sall);
+        if(strlen($search_phone)) $sql .= natural_search(array('p.phone', 'p.phone_perso', 'p.phone_mobile'), $search_phone);
+        if(strlen($search_cti)) $sql .= natural_search(array('p.phone', 'p.phone_perso', 'p.phone_mobile'), $search_cti);
+        if(strlen($search_firstlast_only)) $sql .= natural_search(array('p.lastname', 'p.firstname'), $search_firstlast_only);
+
+        if($search_id > 0) $sql .= natural_search("p.rowid", $search_id, 1);
+        if($search_lastname) $sql .= natural_search('p.lastname', $search_lastname);
+        if($search_firstname) $sql .= natural_search('p.firstname', $search_firstname);
+        if($search_societe) $sql .= natural_search('s.nom', $search_societe);
+        if($search_country) $sql .= " AND p.fk_pays IN (".$search_country.')';
+        if(strlen($search_poste)) $sql .= natural_search('p.poste', $search_poste);
+        if(strlen($search_phone_perso)) $sql .= natural_search('p.phone_perso', $search_phone_perso);
+        if(strlen($search_phone_pro)) $sql .= natural_search('p.phone', $search_phone_pro);
+        if(strlen($search_phone_mobile)) $sql .= natural_search('p.phone_mobile', $search_phone_mobile);
+        if(strlen($search_fax)) $sql .= natural_search('p.fax', $search_fax);
+        if(! empty($conf->socialnetworks->enabled)) {
+            foreach($socialnetworks as $key => $value) {
+                if($value['active'] && strlen(${"search_".$key})) {
+                    $sql .= ' AND p.socialnetworks LIKE \'%"'.$key.'":"'.${"search_".$key}.'%\'';
+                }
+            }
+        }
+        if(strlen($search_email)) $sql .= natural_search('p.email', $search_email);
+        if(strlen($search_zip)) $sql .= natural_search("p.zip", $search_zip);
+        if(strlen($search_town)) $sql .= natural_search("p.town", $search_town);
+        if(count($search_roles) > 0) {
+            $sql .= " AND p.rowid IN (SELECT sc.fk_socpeople FROM ".MAIN_DB_PREFIX."societe_contacts as sc WHERE sc.fk_c_type_contact IN (".implode(',', $search_roles)."))";
+        }
+
+        if($search_no_email != '' && $search_no_email >= 0) $sql .= " AND p.no_email = ".$this->db->escape($search_no_email);
+        if($search_status != '' && $search_status >= 0) $sql .= " AND p.statut = ".$this->db->escape($search_status);
+        if($search_import_key) $sql .= natural_search("p.import_key", $search_import_key);
+        if($type == "o")        // filtre sur type
+        {
+            $sql .= " AND p.fk_soc IS NULL";
+        }
+        else if($type == "f")        // filtre sur type
+        {
+            $sql .= " AND s.fournisseur = 1";
+        }
+        else if($type == "c")        // filtre sur type
+        {
+            $sql .= " AND s.client IN (1, 3)";
+        }
+        else if($type == "p")        // filtre sur type
+        {
+            $sql .= " AND s.client IN (2, 3)";
+        }
+        if(! empty($socid)) {
+            $sql .= " AND s.rowid = ".$socid;
+        }
+// Add where from extra fields
+        include DOL_DOCUMENT_ROOT.'/core/tpl/extrafields_list_search_sql.tpl.php';
+
+// Add order
+        if($view == "recent") {
+            $sql .= $this->db->order("p.datec", "DESC");
+        }
+        else {
+            $sql .= $this->db->order($sortfield, $sortorder);
+        }
+        $TIds = array();
+        $resql = $this->db->query($sql);
+        if($resql && $this->db->num_rows($resql) > 0) {
+            while($obj = $this->db->fetch_object($resql)) {
+                $TIds[] = $obj->rowid;
+            }
+        }
+        return $TIds;
+    }
+
 
 	/**
 	 *	Validate object
