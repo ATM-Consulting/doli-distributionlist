@@ -166,7 +166,10 @@ if($action === 'add_filter') {
 		$TParamURL_HTTP_build_query = $f->url_params;
 
 	} else setEventMessage($langs->trans('DistributionListNeedToSelectFilterForSelection'), 'warnings');
-
+}
+else if($action === 'add_all_filtered_contacts') {
+    $contacts = $object->getAllContactIds();
+    $massaction = 'distributionlist_add_contacts';
 }
 
 // Ajout des contacts à la liste de diffusion
@@ -226,6 +229,7 @@ llxHeader('', $langs->trans('DistributionList'), $help_url);
 
 				// On affiche la liste des contacts
 				$("#inclusion").append(form_contacts);
+				$("#btAddAllContacts").append('&nbsp;'+$('.titre > .opacitymedium').text());
 
 				<?php
 
@@ -330,6 +334,7 @@ if ($id > 0 || !empty($ref)) {
 //		&& $action !== 'set_filter')	{ // All tests are required to be compatible with all browsers
 
 		print '<a class="butAction" href="'.$_SERVER['PHP_SELF'].'?action=add_filter&'.$TParamURL_HTTP_build_query.'">'.$langs->trans('DistributionListSaveCurrentFilter').'</a>';
+		if($object->status < DistributionList::STATUS_CLOSED) print '<a class="butAction" id="btAddAllContacts" href="'.$_SERVER['PHP_SELF'].'?action=add_all_filtered_contacts&'.$TParamURL_HTTP_build_query.'">'.$langs->trans('AddEveryContactWithThisFilter').'</a>';
 
 //	}
 
