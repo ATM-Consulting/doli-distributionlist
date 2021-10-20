@@ -575,7 +575,7 @@ class DistributionList extends CommonObject
 	}
 
     public function getAllContactIds() {
-        global $user, $conf;
+        global $user, $conf, $db;
         dol_include_once('/contact/class/contact.class.php');
         $object = new Contact($this->db);
         $extrafields = new ExtraFields($this->db);
