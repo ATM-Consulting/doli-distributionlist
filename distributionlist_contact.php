@@ -109,7 +109,6 @@ if($action === 'confirm_add_filter' && $confirm === 'yes') {
 	unset($TParamURL['pageplusone']);
 	unset($TParamURL['limit']);
 }
-
 $TParamURL_HTTP_build_query = http_build_query($TParamURL);
 
 if($action === 'add_filter') {
@@ -167,7 +166,8 @@ if($action === 'add_filter') {
 
 	} else setEventMessage($langs->trans('DistributionListNeedToSelectFilterForSelection'), 'warnings');
 }
-else if($action === 'add_all_filtered_contacts') {
+
+if($action === 'add_all_filtered_contacts') {
     $contacts = $object->getAllContactIds();
     $massaction = 'distributionlist_add_contacts';
 }
@@ -332,9 +332,8 @@ if ($id > 0 || !empty($ref)) {
 //		&& empty(GETPOST('button_removefilter.x', 'alpha'))
 //		&& empty(GETPOST('button_removefilter_x', 'alpha'))
 //		&& $action !== 'set_filter')	{ // All tests are required to be compatible with all browsers
-
-		print '<a class="butAction" href="'.$_SERVER['PHP_SELF'].'?action=add_filter&'.$TParamURL_HTTP_build_query.'">'.$langs->trans('DistributionListSaveCurrentFilter').'</a>';
-		if($object->status < DistributionList::STATUS_CLOSED) print '<a class="butAction" id="btAddAllContacts" href="'.$_SERVER['PHP_SELF'].'?action=add_all_filtered_contacts&'.$TParamURL_HTTP_build_query.'">'.$langs->trans('AddEveryContactWithThisFilter').'</a>';
+		print '<a class="butAction" href="'.$_SERVER['PHP_SELF'].'?'.$TParamURL_HTTP_build_query.'&action=add_all_filtered_contacts">'.$langs->trans('DistributionListSaveCurrentFilter').'</a>';
+		if($object->status < DistributionList::STATUS_CLOSED) print '<a class="butAction" id="btAddAllContacts" href="'.$_SERVER['PHP_SELF'].'?'.$TParamURL_HTTP_build_query.'&action=add_all_filtered_contacts&id='.$id.'">'.$langs->trans('AddEveryContactWithThisFilter').'</a>';
 
 //	}
 
