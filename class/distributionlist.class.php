@@ -612,7 +612,7 @@ class DistributionList extends CommonObject
             }
         }
         $search_priv = GETPOST("search_priv", 'alpha');
-        $search_categ = GETPOST("search_categ", 'int');
+        $search_categ = GETPOST("search_categ", 'array');
         $search_categ_thirdparty = GETPOST("search_categ_thirdparty", 'int');
         $search_categ_supplier = GETPOST("search_categ_supplier", 'int');
         $search_status = GETPOST("search_status", 'int');
@@ -783,7 +783,9 @@ class DistributionList extends CommonObject
             if($search_priv == '1') $sql .= " AND (p.priv='1' AND p.fk_user_creat=".$user->id.")";
         }
 
-        if($search_categ > 0) $sql .= " AND cc.fk_categorie = ".$this->db->escape($search_categ);
+        if(!empty($search_categ)) {
+            $sql .= " AND cc.fk_categorie IN ( ".implode(',',$search_categ).")";
+        }
         if($search_categ == -2) $sql .= " AND cc.fk_categorie IS NULL";
         if($search_categ_thirdparty > 0) $sql .= " AND cs.fk_categorie = ".$this->db->escape($search_categ_thirdparty);
         if($search_categ_thirdparty == -2) $sql .= " AND cs.fk_categorie IS NULL";
@@ -844,7 +846,7 @@ class DistributionList extends CommonObject
 // Add where from extra fields
         include DOL_DOCUMENT_ROOT.'/core/tpl/extrafields_list_search_sql.tpl.php';
 
-// Add order
+        // Add order
         if($view == "recent") {
             $sql .= $this->db->order("p.datec", "DESC");
         }
