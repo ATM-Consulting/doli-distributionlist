@@ -170,8 +170,9 @@ if($action === 'add_filter') {
 //maintient le filtre si on change le nombre de contacts à afficher
 elseif(!empty($filter_id) && GETPOSTISSET('limit')){
 	$f = new DistributionListSocpeopleFilter($db);
-	$f->fetch($filter_id);
-	$TParamURL_HTTP_build_query = $f->url_params . $TParamURL_HTTP_build_query;
+	$res = $f->fetch($filter_id);
+	if($res > 0) $TParamURL_HTTP_build_query = $f->url_params . $TParamURL_HTTP_build_query;
+	else setEventMessage($langs->trans('DistributionListFilterError'), 'errors');
 }
 
 if($action === 'add_all_filtered_contacts') {

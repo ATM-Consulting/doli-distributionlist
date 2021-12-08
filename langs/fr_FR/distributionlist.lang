@@ -45,6 +45,7 @@ ConfirmDeleteAllContactsDistributionList=Etes vous sûr(e) de vouloir supprimer 
 DistributionListDeleteFilterSuccess=Le filtre %s a été supprimé
 DistributionListNeedToSelectFilterForDeletion=Vous devez sélectionner le filtre à supprimer
 DistributionListNeedToSelectFilterForSelection=Vous devez sélectionner le filtre à appliquer
+DistributionListFilterError=Erreur lors de la récupération du filtre sélectionné
 
 # Module label 'ModuleDistributionListName'
 ModuleDistributionListName = Listes de diffusion
