@@ -171,7 +171,14 @@ if($action === 'add_filter') {
 elseif(!empty($filter_id) && GETPOSTISSET('limit')){
 	$f = new DistributionListSocpeopleFilter($db);
 	$res = $f->fetch($filter_id);
-	if($res > 0) $TParamURL_HTTP_build_query = $f->url_params . $TParamURL_HTTP_build_query;
+
+	/*Vieux hack pour faire marcher l'ajout ou la suppression de colonnes : je supprimme certains éléments des params du filtre pour éviter qu'ils écrasent les paramètres définis de base */
+	parse_str($f->url_params,$TParamURL_Filter);
+	unset($TParamURL_Filter['selectedfields']);
+	unset($TParamURL_Filter['formfilteraction']);
+	$f->url_params = http_build_query($TParamURL_Filter);
+
+	if($res > 0) $TParamURL_HTTP_build_query .= '&' . $f->url_params;
 	else setEventMessage($langs->trans('DistributionListFilterError'), 'errors');
 }
 
