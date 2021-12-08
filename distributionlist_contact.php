@@ -109,6 +109,7 @@ if($action === 'confirm_add_filter' && $confirm === 'yes') {
 	unset($TParamURL['pageplusone']);
 	unset($TParamURL['limit']);
 }
+
 $TParamURL_HTTP_build_query = http_build_query($TParamURL);
 
 if($action === 'add_filter') {
@@ -165,6 +166,12 @@ if($action === 'add_filter') {
 		$TParamURL_HTTP_build_query = $f->url_params;
 
 	} else setEventMessage($langs->trans('DistributionListNeedToSelectFilterForSelection'), 'warnings');
+}
+//maintient le filtre si on change le nombre de contacts à afficher
+elseif(!empty($filter_id) && GETPOSTISSET('limit')){
+	$f = new DistributionListSocpeopleFilter($db);
+	$f->fetch($filter_id);
+	$TParamURL_HTTP_build_query = $f->url_params . $TParamURL_HTTP_build_query;
 }
 
 if($action === 'add_all_filtered_contacts') {
