@@ -1,6 +1,7 @@
 # CHANGELOG DISTRIBUTIONLIST FOR [DOLIBARR ERP CRM](https://www.dolibarr.org)
 
 ## Unreleased
+- FIX : Bouton "Enregistrer filtre" ne faisait pas la bonne action - *21/12/2021* - 1.2.3
 - FIX : Correction "Ajouter contacts à la liste" : maintenir le filtre si on change le nombre de contacts à afficher - *08/12/2021* - 1.2.2
 - FIX : Correction de l'action d'ajout de tous les contacts sur la liste de diffusion - *06/12/2021* - 1.2.1
 - NEW : Bouton action ajouter tous les contacts filtrés - *07/10/2021* - 1.2.0
