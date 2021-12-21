@@ -347,7 +347,7 @@ if ($id > 0 || !empty($ref)) {
 //		&& empty(GETPOST('button_removefilter.x', 'alpha'))
 //		&& empty(GETPOST('button_removefilter_x', 'alpha'))
 //		&& $action !== 'set_filter')	{ // All tests are required to be compatible with all browsers
-		print '<a class="butAction" href="'.$_SERVER['PHP_SELF'].'?'.$TParamURL_HTTP_build_query.'&action=add_all_filtered_contacts">'.$langs->trans('DistributionListSaveCurrentFilter').'</a>';
+		print '<a class="butAction" href="'.$_SERVER['PHP_SELF'].'?'.$TParamURL_HTTP_build_query.'&action=add_filter">'.$langs->trans('DistributionListSaveCurrentFilter').'</a>';
 		if($object->status < DistributionList::STATUS_CLOSED) print '<a class="butAction" id="btAddAllContacts" href="'.$_SERVER['PHP_SELF'].'?'.$TParamURL_HTTP_build_query.'&action=add_all_filtered_contacts&id='.$id.'">'.$langs->trans('AddEveryContactWithThisFilter').'</a>';
 
 //	}
