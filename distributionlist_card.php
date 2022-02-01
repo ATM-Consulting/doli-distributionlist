@@ -151,8 +151,13 @@ if (empty($reshook))
 	// Actions cancel, add, update, update_extras, confirm_validate, confirm_delete, confirm_deleteline, confirm_clone, confirm_close, confirm_setdraft, confirm_reopen
 
 	if($conf->global->DISTRIBUTIONLISTUNIQUELABEL) {
-		if(ToolsDistributionlist::distributionlist_alreadyexist($label) > 0) {
-			setEventMessage($langs->trans('DistributionList_Label_AlreadyExist', $label), 'errors');
+		if($id_doubledistributionlist = ToolsDistributionlist::distributionlist_alreadyexist($label)) {
+			$distributionlist_double = new DistributionList($db);
+			$res = $distributionlist_double->fetch($id_doubledistributionlist);
+			if($res > 0){
+				$url = $distributionlist_double->getNomUrl();
+			}
+			setEventMessage($langs->trans('DistributionList_Label_AlreadyExist', $label, $url), 'errors');
 			$error++;
 		}
 	}

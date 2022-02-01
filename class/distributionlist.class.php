@@ -351,6 +351,54 @@ class DistributionList extends CommonObject
 	}
 
 	/**
+	 * Load object in memory from the database
+	 *
+	 * @param int    $id   Id object
+	 * @param string $ref  Ref
+	 * @return int         <0 if KO, 0 if not found, >0 if OK
+	 */
+	public function fetchByLabel($label)
+	{
+
+		if (empty($label)) return -1;
+
+		$sql = 'SELECT '.$this->getFieldList();
+		$sql .= ' FROM '.MAIN_DB_PREFIX.$this->table_element;
+
+		if (!empty($id))  $sql .= ' WHERE label = "'.$label.'"';
+		if (isset($this->ismultientitymanaged) && $this->ismultientitymanaged == 1) $sql .= ' AND entity IN ('.getEntity($this->table_element).')';
+		$sql .= ' LIMIT 1'; // This is a fetch, to be sure to get only one record
+
+		$res = $this->db->query($sql);
+		if ($res)
+		{
+			$obj = $this->db->fetch_object($res);
+			if ($obj)
+			{
+				$this->setVarsFromFetchObj($obj);
+
+				// Retreive all extrafield
+				// fetch optionals attributes and labels
+				$this->fetch_optionals();
+
+				$this->fetchLines();
+
+				return $this->id;
+			}
+			else
+			{
+				return 0;
+			}
+		}
+		else
+		{
+			$this->error = $this->db->lasterror();
+			$this->errors[] = $this->error;
+			return -1;
+		}
+	}
+
+	/**
 	 * Load object lines in memory from the database
 	 *
 	 * @return int         <0 if KO, 0 if not found, >0 if OK
