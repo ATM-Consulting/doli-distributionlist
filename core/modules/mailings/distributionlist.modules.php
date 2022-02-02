@@ -170,7 +170,7 @@ class mailing_distributionlist extends MailingTargets
 		$langs->load("DistributionList");
 
 		$distributionlist = new DistributionList($this->db);
-		$TDistributionList = $distributionlist->fetchAll();
+		$TDistributionList = $distributionlist->fetchAll('ASC', 'label');
 
 		$s = '<select name="filter_distributionlist" class="flat">';
 

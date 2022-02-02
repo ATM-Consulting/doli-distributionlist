@@ -198,6 +198,25 @@ dol_fiche_head($head, 'settings', '', -1, "distributionlist@distributionlist");
 // Setup page goes here
 echo '<span class="opacitymedium">'.$langs->trans("DistributionListSetupPage").'</span>';
 
+//Partie "Paramètres" en général
+
+print load_fiche_titre($langs->trans("Parameters"), '', '');
+
+print '<table class="noborder centpercent">';
+
+print '<tr class="liste_titre">';
+print '<td>'.$langs->trans("Description").'</td>';
+print '<td>'.$langs->trans("Value").'</td>';
+print '</tr>'."\n";
+
+print '<tr class="oddeven">';
+print '<td>'.$langs->trans("DistributionList_UniqueLabel").'</td>';
+print '<td align="center" width="300">';
+print ajax_constantonoff('DISTRIBUTIONLISTUNIQUELABEL');
+print "</td>\n</tr>\n";
+
+print '</table>';
+
 
 if ($action == 'edit')
 {

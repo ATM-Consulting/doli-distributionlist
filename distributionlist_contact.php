@@ -38,6 +38,7 @@ if (!$res && file_exists("../../../main.inc.php")) $res = @include "../../../mai
 if (!$res) die("Include of main fails");
 
 dol_include_once('/distributionlist/class/distributionlist.class.php');
+dol_include_once('/distributionlist/class/tools_distributionlist.class.php');
 dol_include_once('/distributionlist/class/distributionlistsocpeople.class.php');
 dol_include_once('/distributionlist/class/distributionlistsocpeoplefilter.class.php');
 dol_include_once('/distributionlist/lib/distributionlist_distributionlist.lib.php');
@@ -119,20 +120,26 @@ if($action === 'add_filter') {
 		// 'text' => $langs->trans("ConfirmClone"),
 		// array('type' => 'checkbox', 'name' => 'clone_content', 'label' => $langs->trans("CloneMainAttributes"), 'value' => 1),
 		// array('type' => 'checkbox', 'name' => 'update_prices', 'label' => $langs->trans("PuttingPricesUpToDate"), 'value' => 1),
-		array('type' => 'text', 'name' => 'label', 'label' => $langs->trans('AdvTgtOrCreateNewFilter'), 'value'=>$langs->trans('Filter').'&nbsp;'.date('d/m/Y H:i:s'))
+		array('type' => 'text', 'name' => 'label', 'label' => $langs->trans('AdvTgtOrCreateNewFilter'), 'value'=>(empty($label)) ? $langs->trans('Filter').'&nbsp;'.date('d/m/Y H:i:s') : $label)
 	);
 	$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"].'?id='.$object->id.'&'.$TParamURL_HTTP_build_query, $langs->trans('AdvTgtCreateFilter'), '', 'confirm_add_filter', $formquestion, 'yes', 1);
 
 } elseif ($action === 'confirm_add_filter' && $confirm === 'yes') {
 
-	$filter = new DistributionListSocpeopleFilter($db);
-	$filter->url_params = $TParamURL_HTTP_build_query;
-	$filter->fk_distributionlist = $id;
-	$filter->label = $label;
-	$filter->create($user);
-	// Pour éviter de réenregistrer le filtre en cas de réactualisation de la page
-	header('Location: '.$_SERVER['PHP_SELF'].'?id='.$id.'&set_filter=1&filter='.$filter->id);
-	exit;
+	if($id_doubledistributionlistfilter = ToolsDistributionlist::distributionlistsocpeoplefilter_alreadyexist($label)){
+		setEventMessage($langs->trans('DistributionListFilterSocPeople_Label_AlreadyExist', $label), 'errors');
+		header('Location: '.$_SERVER['PHP_SELF'].'?id='.$id.'&action=add_filter&label='.$label);
+		exit;
+	} else {
+		$filter = new DistributionListSocpeopleFilter($db);
+		$filter->url_params = $TParamURL_HTTP_build_query;
+		$filter->fk_distributionlist = $id;
+		$filter->label = $label;
+		$filter->create($user);
+		// Pour éviter de réenregistrer le filtre en cas de réactualisation de la page
+		header('Location: ' . $_SERVER['PHP_SELF'] . '?id=' . $id . '&set_filter=1&filter=' . $filter->id);
+		exit;
+	}
 
 } elseif(GETPOSTISSET('delete_filter')) {
 
@@ -321,7 +328,7 @@ if ($id > 0 || !empty($ref)) {
 	print '<div class="underbanner clearboth"></div><br />';
 
 	$filter = new DistributionListSocpeopleFilter($db);
-	$TFilters = $filter->fetchAll('', '', 0, 0, array());
+	$TFilters = $filter->fetchAll('ASC', 'label', 0, 0, array());
 
 	print '<div class="tabsAction">';
 	print '<form name="set_filter" method="POST" action="'.$_SERVER['PHP_SELF'].'?id='.$id.'">';
