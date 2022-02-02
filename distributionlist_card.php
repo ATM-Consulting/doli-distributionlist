@@ -155,7 +155,7 @@ if (empty($reshook))
 			$distributionlist_double = new DistributionList($db);
 			$res = $distributionlist_double->fetch($id_doubledistributionlist);
 			if($res > 0){
-				$url = $distributionlist_double->getNomUrl();
+				$url = $distributionlist_double->getNomUrl('', '', 1);
 			}
 			setEventMessage($langs->trans('DistributionList_Label_AlreadyExist', $label, $url), 'errors');
 			$error++;
