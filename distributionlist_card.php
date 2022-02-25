@@ -61,6 +61,7 @@ require_once DOL_DOCUMENT_ROOT.'/core/class/html.formcompany.class.php';
 require_once DOL_DOCUMENT_ROOT.'/core/class/html.formfile.class.php';
 require_once DOL_DOCUMENT_ROOT.'/core/class/html.formprojet.class.php';
 dol_include_once('/distributionlist/class/distributionlist.class.php');
+dol_include_once('/distributionlist/class/tools_distributionlist.class.php');
 dol_include_once('/distributionlist/class/distributionlistsocpeople.class.php');
 dol_include_once('/distributionlist/lib/distributionlist_distributionlist.lib.php');
 
@@ -79,6 +80,7 @@ $backtopageforcancel = GETPOST('backtopageforcancel', 'alpha');
 $massaction = GETPOST('massaction', 'alpha');
 $contacts = GETPOST('toselect');
 $nb_deleted_contacts = GETPOST('nb_deleted_contacts', 'int');
+$label = GETPOST('label','alphanohtml');
 
 // Initialize technical objects
 $object = new DistributionList($db);
@@ -147,6 +149,19 @@ if (empty($reshook))
 	$triggermodname = 'DISTRIBUTIONLIST_DISTRIBUTIONLIST_MODIFY'; // Name of trigger action code to execute when we modify record
 
 	// Actions cancel, add, update, update_extras, confirm_validate, confirm_delete, confirm_deleteline, confirm_clone, confirm_close, confirm_setdraft, confirm_reopen
+
+	if($conf->global->DISTRIBUTIONLISTUNIQUELABEL) {
+		if($id_doubledistributionlist = ToolsDistributionlist::distributionlist_alreadyexist($label)) {
+			$distributionlist_double = new DistributionList($db);
+			$res = $distributionlist_double->fetch($id_doubledistributionlist);
+			if($res > 0){
+				$url = $distributionlist_double->getNomUrl('', '', 1);
+			}
+			setEventMessage($langs->trans('DistributionList_Label_AlreadyExist', $label, $url), 'errors');
+			$error++;
+		}
+	}
+
 	include DOL_DOCUMENT_ROOT.'/core/actions_addupdatedelete.inc.php';
 
 	// Actions when linking object each other

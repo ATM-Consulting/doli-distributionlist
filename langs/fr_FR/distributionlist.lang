@@ -58,7 +58,7 @@ ModuleDistributionListDesc = Module de création de listes de diffusion pour app
 DistributionListSetup = Configuration du module listes de diffusion
 Settings = Réglages
 DistributionListSetupPage = Page de configuration du module listes de diffusion
-
+DistributionList_UniqueLabel=Ne pas autoriser les listes de diffusion de même nom
 #
 # Permissions
 #
@@ -90,3 +90,5 @@ MyWidgetDescription = Description de mon widget
 #
 NoContactInDistribListError=Des contacts doivent être ajoutés à la liste de diffusion avant de pouvoir la valider
 AddEveryContactWithThisFilter=Ajouter tous les contacts
+DistributionListFilterSocPeople_Label_AlreadyExist=Un filtre nommée "%s" existe déjà
+DistributionList_Label_AlreadyExist=Une liste de diffusion nommée "%s" existe déjà : %s

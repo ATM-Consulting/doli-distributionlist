@@ -1,6 +1,10 @@
 # CHANGELOG DISTRIBUTIONLIST FOR [DOLIBARR ERP CRM](https://www.dolibarr.org)
 
 ## Unreleased
+- FIX : Empêcher les doublons :
+  - Conf DISTRIBUTIONLISTUNIQUELABEL : Rendre le libellé des listes de diffusion unique + message d'erreur et lien vers la liste existante avec le même nom
+  - Onglet ajout des destinataires, afficher les filtres personnalisés par ordre alphabétique + empecher les doublons
+  - Dans Sarbacane, onglet Destinataires, afficher la liste des LDD par ordre alphabétique - *02/02/2021* - 1.3.0
 - FIX : Suppression des liste de diffusion au statut brouillon des liste de liste de diffusion - *25/02/2022* - 1.2.4
 - FIX : Bouton "Enregistrer filtre" ne faisait pas la bonne action - *21/12/2021* - 1.2.3
 - FIX : Correction "Ajouter contacts à la liste" : maintenir le filtre si on change le nombre de contacts à afficher - *08/12/2021* - 1.2.2
