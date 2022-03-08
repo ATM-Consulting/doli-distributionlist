@@ -170,13 +170,15 @@ class mailing_distributionlist extends MailingTargets
 		$langs->load("DistributionList");
 
 		$distributionlist = new DistributionList($this->db);
-		$TDistributionList = $distributionlist->fetchAll('ASC', 'label',  0, 0, array('status'=>1));
+		$TDistributionList = $distributionlist->fetchAll('ASC', 'label',  0, 0, array('customsql'=> 'status IN (1,2)'));
 
 		$s = '<select name="filter_distributionlist" class="flat">';
 
-		foreach($TDistributionList as $id=>$distributionlist) {
-			$s .= '<option value="'.$id.'">'.$distributionlist->label.'</option>';
-		}
+        if (! empty($TDistributionList)) {
+            foreach($TDistributionList as $id=>$distributionlist) {
+                $s .= '<option value="'.$id.'">'.$distributionlist->label.'</option>';
+            }
+        }
 
 		$s .= '</select> ';
 

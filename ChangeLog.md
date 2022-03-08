@@ -1,6 +1,7 @@
 # CHANGELOG DISTRIBUTIONLIST FOR [DOLIBARR ERP CRM](https://www.dolibarr.org)
 
 ## Unreleased
+- FIX : Récupération des listes de diffusion au statut clôturé dans le select des listes de diffusions sur l'onglet "Destinataires" d'une campagne - *08/03/2022* - 1.3.1
 - FIX : Empêcher les doublons :
   - Conf DISTRIBUTIONLISTUNIQUELABEL : Rendre le libellé des listes de diffusion unique + message d'erreur et lien vers la liste existante avec le même nom
   - Onglet ajout des destinataires, afficher les filtres personnalisés par ordre alphabétique + empecher les doublons
