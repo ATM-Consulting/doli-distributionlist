@@ -151,7 +151,8 @@ if (empty($reshook))
 	// Actions cancel, add, update, update_extras, confirm_validate, confirm_delete, confirm_deleteline, confirm_clone, confirm_close, confirm_setdraft, confirm_reopen
 
 	if($conf->global->DISTRIBUTIONLISTUNIQUELABEL) {
-		if($id_doubledistributionlist = ToolsDistributionlist::distributionlist_alreadyexist($label)) {
+        $id_doubledistributionlist = ToolsDistributionlist::distributionlist_alreadyexist($label);
+		if($id_doubledistributionlist > 0) {
 			$distributionlist_double = new DistributionList($db);
 			$res = $distributionlist_double->fetch($id_doubledistributionlist);
 			if($res > 0){
