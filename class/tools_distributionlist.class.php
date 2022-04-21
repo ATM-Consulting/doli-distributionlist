@@ -14,7 +14,7 @@ class ToolsDistributionlist
 		global $db;
 
 		$sql = "SELECT rowid as id FROM " . MAIN_DB_PREFIX . "distributionlist_distributionlist";
-		$sql .= " WHERE label = '" . $label . "'";
+		$sql .= " WHERE label = '" . $db->escape($label) . "'";
 
 		$resql = $db->query($sql);
 
