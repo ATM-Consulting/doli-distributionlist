@@ -15,29 +15,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/**
- * \file    core/triggers/interface_99_modClitalice_ClitaliceTriggers.class.php
- * \ingroup clitalice
- * \brief   Example trigger.
- *
- * Put detailed description here.
- *
- * \remarks You can create other triggers by copying this one.
- * - File name should be either:
- *      - interface_99_modClitalice_MyTrigger.class.php
- *      - interface_99_all_MyTrigger.class.php
- * - The file must stay in core/triggers
- * - The class name must be InterfaceMytrigger
- * - The constructor method must be named InterfaceMytrigger
- * - The name property name must be MyTrigger
- */
-
 require_once DOL_DOCUMENT_ROOT.'/core/triggers/dolibarrtriggers.class.php';
 dol_include_once('/distributionlist/class/distributionlist.class.php');
 
 
 /**
- *  Class of triggers for Clitalice module
+ *  Class of triggers for Distributionlist module
  */
 class InterfaceDistributionlisttrigger extends DolibarrTriggers
 {
