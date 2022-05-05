@@ -139,7 +139,7 @@ class InterfaceDistributionlisttrigger extends DolibarrTriggers
 							$distributionList->update($user);
 
 							$distributionListSocpeople = new DistributionListSocpeople($this->db);
-							$distributionListSocpeople->deleteByContact($user, $object->id);
+							$distributionListSocpeople->deleteByContact($object->id);
 						}
 					}
 				} else {
