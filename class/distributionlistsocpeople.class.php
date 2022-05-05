@@ -415,6 +415,26 @@ class DistributionListSocpeople extends CommonObject
 	}
 
 	/**
+	 * Supprimer le contact donné en paramètre de toutes les listes de diffusion
+	 *
+	 * @param int  $fk_socpeople   Contact  condition
+	 * @return int             <0 if KO, >0 if OK
+	 */
+	public function deleteByContact ($fk_socpeople)
+	{
+
+		$sql = 'DELETE FROM '.MAIN_DB_PREFIX.$this->table_element.' WHERE fk_socpeople = '.intval($fk_socpeople);
+		$resql = $this->db->query($sql);
+
+		if($resql){
+			return 1;
+		} else {
+			return -1;
+		}
+	}
+
+
+	/**
 	 * Delete object in database
 	 *
 	 * @param User $user       User that deletes
