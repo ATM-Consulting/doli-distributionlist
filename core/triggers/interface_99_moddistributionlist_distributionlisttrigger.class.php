@@ -17,7 +17,7 @@
 
 require_once DOL_DOCUMENT_ROOT.'/core/triggers/dolibarrtriggers.class.php';
 dol_include_once('/distributionlist/class/distributionlist.class.php');
-
+dol_include_once('/distributionlist/class/distributionlistsocpeople.class.php');
 
 /**
  *  Class of triggers for Distributionlist module
@@ -137,6 +137,9 @@ class InterfaceDistributionlisttrigger extends DolibarrTriggers
 						if ($res) {
 							$distributionList->nb_contacts--;
 							$distributionList->update($user);
+
+							$distributionListSocpeople = new DistributionListSocpeople($this->db);
+							$distributionListSocpeople->deleteByContact($object->id);
 						}
 					}
 				} else {
