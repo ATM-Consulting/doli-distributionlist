@@ -418,7 +418,7 @@ class DistributionListSocpeople extends CommonObject
 	 * Supprimer le contact donné en paramètre de toutes les listes de diffusion
 	 *
 	 * @param User $user       User that deletes
-	 * @param User $fk_socpeople   Contact  condition
+	 * @param int  $fk_socpeople   Contact  condition
 	 * @param bool $notrigger  false=launch triggers after, true=disable triggers
 	 * @return int             <0 if KO, >0 if OK
 	 */
