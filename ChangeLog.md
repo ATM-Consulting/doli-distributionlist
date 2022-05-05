@@ -6,6 +6,7 @@
 
 ## 1.3
 
+- FIX : lors de la suppression d'un contact, il faut décrémenter le nombre de contact dans les listes de diffusion concernés - *05/05/2022* - 1.3.3
 - FIX : Test d'unicité sur le label était non fonctionnel - *20/04/2022* - 1.3.2
 - FIX : Récupération des listes de diffusion au statut clôturé dans le select des listes de diffusions sur l'onglet "Destinataires" d'une campagne - *08/03/2022* - 1.3.1
 - FIX : Empêcher les doublons :
