@@ -56,7 +56,7 @@ MyWidgetDescription = My widget description
 #
 # Permissions
 #
-DistributionListPermRead   = read/show distribution lists
+DistributionListPermRead = read/show distribution lists
 DistributionListPermCreate = create distribution lists
 DistributionListPermUpdate = modify/update distribution lists
 DistributionListPermDelete = delete distribution lists
